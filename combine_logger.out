@@ -1,0 +1,29 @@
+INFO: (function: run) Combine.cc: 902 -- Computing results starting from observation (a-posteriori)
+INFO: (function: improveOnce) CascadeMinimizer.cc: 157 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 180 -- Minimisation finished with status=-1
+DEBUG: (function: improveOnce) CascadeMinimizer.cc: 186 -- Minimization ended with latest status != 0 or 1
+INFO: (function: generateAsimov) ToyMCSamplerOpt.cc: 139 -- Using internal logic for binned/unbinned Asimov dataset generation
+INFO: (function: generateWithHisto) ToyMCSamplerOpt.cc: 214 -- Generating asimov with histogram for pdf pdf_binnnbb_obsOnly: in 600 x-bins
+INFO: (function: generateAsimov) ToyMCSamplerOpt.cc: 139 -- Using internal logic for binned/unbinned Asimov dataset generation
+INFO: (function: generateWithHisto) ToyMCSamplerOpt.cc: 214 -- Generating asimov with histogram for pdf pdf_binnnbbVBF_obsOnly: in 600 x-bins
+INFO: (function: generateAsimov) ToyMCSamplerOpt.cc: 139 -- Using internal logic for binned/unbinned Asimov dataset generation
+INFO: (function: generateWithHisto) ToyMCSamplerOpt.cc: 214 -- Generating asimov with histogram for pdf pdf_bineebb_obsOnly: in 600 x-bins
+INFO: (function: generateAsimov) ToyMCSamplerOpt.cc: 139 -- Using internal logic for binned/unbinned Asimov dataset generation
+INFO: (function: generateWithHisto) ToyMCSamplerOpt.cc: 214 -- Generating asimov with histogram for pdf pdf_bineebbVBF_obsOnly: in 600 x-bins
+INFO: (function: generateAsimov) ToyMCSamplerOpt.cc: 139 -- Using internal logic for binned/unbinned Asimov dataset generation
+INFO: (function: generateWithHisto) ToyMCSamplerOpt.cc: 214 -- Generating asimov with histogram for pdf pdf_binmmbb_obsOnly: in 600 x-bins
+INFO: (function: generateAsimov) ToyMCSamplerOpt.cc: 139 -- Using internal logic for binned/unbinned Asimov dataset generation
+INFO: (function: generateWithHisto) ToyMCSamplerOpt.cc: 214 -- Generating asimov with histogram for pdf pdf_binmmbbVBF_obsOnly: in 600 x-bins
+INFO: (function: runLimitExpected) AsymptoticLimits.cc: 436 -- Median for expected limits = 0.482422 (Sigma for expected limits = 0.246138)
+INFO: (function: runLimit) AsymptoticLimits.cc: 193 -- NLL at global minimum of data = -16.8535 (r=5.84871e-09)
+INFO: (function: runLimit) AsymptoticLimits.cc: 213 -- NLL at global minimum of asimov = -13.0411 (r=1.19584e-05)
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 1.200000:	q_mu = 10.51729	q_A  = 9.76379	CLsb = 0.00059	CLb  = 0.45202	CLs  = 0.00130
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.600000:	q_mu = 5.56159	q_A  = 4.86274	CLsb = 0.00905	CLb  = 0.43705	CLs  = 0.02070
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.300000:	q_mu = 2.86007	q_A  = 2.25991	CLsb = 0.04429	CLb  = 0.42089	CLs  = 0.10523
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.469849:	q_mu = 4.40841	q_A  = 3.73947	CLsb = 0.01757	CLb  = 0.43134	CLs  = 0.04073
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.406538:	q_mu = 3.83708	q_A  = 3.18851	CLsb = 0.02458	CLb  = 0.42795	CLs  = 0.05743
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.439630:	q_mu = 4.13654	q_A  = 3.47671	CLsb = 0.02060	CLb  = 0.42978	CLs  = 0.04793
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.426821:	q_mu = 4.02084	q_A  = 3.36520	CLsb = 0.02205	CLb  = 0.42909	CLs  = 0.05139
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.433408:	q_mu = 4.08037	q_A  = 3.42255	CLsb = 0.02129	CLb  = 0.42944	CLs  = 0.04958
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.430840:	q_mu = 4.05717	q_A  = 3.40019	CLsb = 0.02158	CLb  = 0.42931	CLs  = 0.05027
+INFO: (function: getCLs) AsymptoticLimits.cc: 343 -- At r = 0.432157:	q_mu = 4.06906	q_A  = 3.41165	CLsb = 0.02143	CLb  = 0.42938	CLs  = 0.04991
