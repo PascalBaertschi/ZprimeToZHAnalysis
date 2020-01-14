@@ -1,0 +1,76 @@
+imax 1
+jmax *
+kmax *
+-----------------------------------------------------------------------------------
+shapes            XZHVBFmm0bVBF_M4900  mm0bVBF    workspace/XZHVBFmm0bVBF.root    ZH_RunII:$PROCESS
+shapes            Vjets_mm0bVBF    mm0bVBF    workspace/mm0bVBF.root    ZH_RunII:$PROCESS
+shapes            Top_mm0bVBF      mm0bVBF    workspace/mm0bVBF.root    ZH_RunII:$PROCESS
+shapes            VV_mm0bVBF       mm0bVBF    workspace/mm0bVBF.root    ZH_RunII:$PROCESS
+shapes            data_obs         mm0bVBF    workspace/mm0bVBF.root    ZH_RunII:data_obs
+-----------------------------------------------------------------------------------
+bin               mm0bVBF
+observation       -1.0
+-----------------------------------------------------------------------------------
+bin                                               mm0bVBF             mm0bVBF             mm0bVBF             mm0bVBF             
+process                                           XZHVBFmm0bVBF_M4900 Vjets_mm0bVBF       Top_mm0bVBF         VV_mm0bVBF          
+process                                           0                   1                   2                   3                   
+rate                                              1.000000            136.550238          3.264057            6.381468            
+-----------------------------------------------------------------------------------
+CMSRunII_Vjets_mm0bVBF_norm             lnN       -                   1.049               -                   -                   
+CMSRunII_Vjets_mm0bVBF_altf             lnN       -                   1.030               -                   -                   
+CMSRunII_Top_mm0bVBF_norm               lnN       -                   -                   1.107               -                   
+CMSRunII_VV_mm0bVBF_norm                lnN       -                   -                   -                   2.312               
+CMSRunII_Top_mm0bVBF_sf                 lnN       -                   -                   1.009               -                   
+CMSRunII_eff_b                          lnN       1.092               -                   0.986               1.031               
+CMSRunII_eff_e                          lnN       -                   -                   1.000               1.017               
+CMSRunII_eff_m                          lnN       -                   -                   1.006               1.023               
+CMSRunII_eff_t                          lnN       -                   -                   -                   1.000               
+CMSRunII_eff_met                        lnN       -                   -                   -                   1.017               
+CMSRunII_scale_mass                     lnN       -                   -                   -                   1.063               
+CMSRunII_res_mass                       lnN       -                   -                   -                   1.063               
+CMSRunII_scale_pu                       lnN       -                   -                   -                   1.010               
+CMSRunII_lumi                           lnN       -                   -                   -                   1.025               
+pdf_accept                              lnN       -                   -                   1.001               1.017               
+pdf_scale                               lnN       -                   -                   1.001               1.042               
+qcd_scale                               lnN       -                   -                   1.010               1.189               
+CMSRunII_eff_H                          lnN       1.060               -                   -                   -                   
+CMSRunII_eff_V                          lnN       1.110               -                   -                   -                   
+CMSRunII_eff_e                          lnN       1.017               -                   -                   -                   
+CMSRunII_eff_m                          lnN       1.023               -                   -                   -                   
+CMSRunII_eff_met                        lnN       1.017               -                   -                   -                   
+CMSRunII_eff_t                          lnN       1.000               -                   -                   -                   
+CMSRunII_lumi                           lnN       1.025               -                   -                   -                   
+CMSRunII_res_mass                       lnN       0.899/1.112         -                   -                   -                   
+CMSRunII_scale_e                        lnN       1.010               -                   -                   -                   
+CMSRunII_scale_m                        lnN       1.010               -                   -                   -                   
+CMSRunII_scale_mass                     lnN       1.010               -                   -                   -                   
+CMSRunII_scale_pu                       lnN       1.001               -                   -                   -                   
+pdf_accept                              lnN       1.010               -                   -                   -                   
+pdf_scale                               lnN       1.484/0.516         -                   -                   -                   
+qcd_scale                               lnN       1.142/0.883         -                   -                   -                   
+CMSRunII_sig_p1_fit                     param     0.0                 1.0                 
+CMSRunII_sig_p1_jes                     param     0.0                 1.0                 
+CMSRunII_sig_p1_scale_e                 param     0.0                 1.0                 
+CMSRunII_sig_p1_scale_m                 param     0.0                 1.0                 
+CMSRunII_sig_p2_fit                     param     0.0                 1.0                 
+CMSRunII_sig_p2_jer                     param     0.0                 1.0                 
+CMSRunII_sig_p2_jes                     param     0.0                 1.0                 
+CMSRunII_sig_p2_scale_e                 param     0.0                 1.0                 
+CMSRunII_sig_p2_scale_m                 param     0.0                 1.0                 
+CMSRunII_sig_p3_fit                     param     0.0                 1.0                 
+CMSRunII_sig_p4_fit                     param     0.0                 1.0                 
+CMSRunII_Vjets_mm0bVBF_eig0             param     0.0                 1.0                 
+CMSRunII_Vjets_mm0bVBF_eig1             param     0.0                 1.0                 
+CMSRunII_Vjets_mm0bVBF_eig2             param     0.0                 1.0                 
+CMSRunII_Vjets_mm0bVBF_eig3             param     0.0                 1.0                 
+CMSRunII_Vjets_mm0bVBF_eig4             param     0.0                 1.0                 
+CMSRunII_Vjets_mm0bVBF_eig5             param     0.0                 1.0                 
+CMSRunII_Top_mm0bVBF_eig0               param     0.0                 1.0                 
+CMSRunII_Top_mm0bVBF_eig1               param     0.0                 1.0                 
+CMSRunII_VV_mm0bVBF_eig0                param     0.0                 1.0                 
+CMSRunII_VV_mm0bVBF_eig1                param     0.0                 1.0                 
+theory group = pdf_scale qcd_scale
+norm group = CMSRunII_Vjets_mm0bVBF_norm CMSRunII_Vjets_mm0bVBF_altf
+shape1 group = CMSRunII_Vjets_mm0bVBF_eig0 CMSRunII_Vjets_mm0bVBF_eig1 CMSRunII_Vjets_mm0bVBF_eig2 CMSRunII_Vjets_mm0bVBF_eig3 CMSRunII_Vjets_mm0bVBF_eig4 CMSRunII_Vjets_mm0bVBF_eig5 
+shape2 group = CMSRunII_Top_mm0bVBF_eig0  CMSRunII_VV_mm0bVBF_eig0 CMSRunII_Top_mm0bVBF_eig1  CMSRunII_VV_mm0bVBF_eig1 
+shapeS group = CMSRunII_sig_p2_jes CMSRunII_sig_p1_jes CMSRunII_sig_p3_fit CMSRunII_sig_p4_fit CMSRunII_sig_p1_fit CMSRunII_sig_p2_scale_m CMSRunII_sig_p1_scale_e CMSRunII_sig_p2_fit CMSRunII_sig_p2_jer CMSRunII_sig_p2_scale_e CMSRunII_sig_p1_scale_m 

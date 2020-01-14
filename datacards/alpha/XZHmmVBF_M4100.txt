@@ -1,0 +1,85 @@
+Combination of mm0bVBF=XZHVBFmm0bVBF_M4100.txt  mmbbVBF=XZHVBFmmbbVBF_M4100.txt
+imax 2 number of bins
+jmax 7 number of processes minus 1
+kmax 56 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes Top_mm0bVBF          mm0bVBF              workspace/mm0bVBF.root ZH_RunII:$PROCESS
+shapes VV_mm0bVBF           mm0bVBF              workspace/mm0bVBF.root ZH_RunII:$PROCESS
+shapes Vjets_mm0bVBF        mm0bVBF              workspace/mm0bVBF.root ZH_RunII:$PROCESS
+shapes XZHVBFmm0bVBF_M4100  mm0bVBF              workspace/XZHVBFmm0bVBF.root ZH_RunII:$PROCESS
+shapes data_obs             mm0bVBF              workspace/mm0bVBF.root ZH_RunII:data_obs
+shapes Top_mmbbVBF          mmbbVBF              workspace/mmbbVBF.root ZH_RunII:$PROCESS
+shapes VV_mmbbVBF           mmbbVBF              workspace/mmbbVBF.root ZH_RunII:$PROCESS
+shapes Vjets_mmbbVBF        mmbbVBF              workspace/mmbbVBF.root ZH_RunII:$PROCESS
+shapes XZHVBFmmbbVBF_M4100  mmbbVBF              workspace/XZHVBFmmbbVBF.root ZH_RunII:$PROCESS
+shapes data_obs             mmbbVBF              workspace/mmbbVBF.root ZH_RunII:data_obs
+----------------------------------------------------------------------------------------------------------------------------------
+bin          mm0bVBF      mmbbVBF    
+observation  -1           -1         
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                            mm0bVBF              mm0bVBF              mm0bVBF              mm0bVBF              mmbbVBF              mmbbVBF              mmbbVBF              mmbbVBF            
+process                                        XZHVBFmm0bVBF_M4100  Vjets_mm0bVBF        VV_mm0bVBF           Top_mm0bVBF          XZHVBFmmbbVBF_M4100  VV_mmbbVBF           Vjets_mmbbVBF        Top_mmbbVBF        
+process                                        -1                   1                    2                    3                    0                    4                    5                    6                  
+rate                                           1                    136.550238           6.381468             3.264057             1                    0.932799             9.784283             1.796175           
+----------------------------------------------------------------------------------------------------------------------------------
+CMSRunII_Top_mm0bVBF_norm   lnN                -                    -                    -                    1.107                -                    -                    -                    -                  
+CMSRunII_Top_mm0bVBF_sf   lnN                  -                    -                    -                    1.009                -                    -                    -                    -                  
+CMSRunII_Top_mmbbVBF_norm   lnN                -                    -                    -                    -                    -                    -                    -                    1.105              
+CMSRunII_Top_mmbbVBF_sf   lnN                  -                    -                    -                    -                    -                    -                    -                    1.035              
+CMSRunII_VV_mm0bVBF_norm   lnN                 -                    -                    2.312                -                    -                    -                    -                    -                  
+CMSRunII_VV_mmbbVBF_norm   lnN                 -                    -                    -                    -                    -                    1.382                -                    -                  
+CMSRunII_Vjets_mm0bVBF_altf   lnN              -                    1.03                 -                    -                    -                    -                    -                    -                  
+CMSRunII_Vjets_mm0bVBF_norm   lnN              -                    1.049                -                    -                    -                    -                    -                    -                  
+CMSRunII_Vjets_mmbbVBF_altf   lnN              -                    -                    -                    -                    -                    -                    1.199                -                  
+CMSRunII_Vjets_mmbbVBF_norm   lnN              -                    -                    -                    -                    -                    -                    1.204                -                  
+CMSRunII_eff_H          lnN                    1.06                 -                    -                    -                    1.06                 -                    -                    -                  
+CMSRunII_eff_V          lnN                    1.11                 -                    -                    -                    -                    -                    -                    -                  
+CMSRunII_eff_b          lnN                    1.054                -                    1.031                0.986                0.988                1.045                -                    0.986              
+CMSRunII_eff_e          lnN                    1.017                -                    -                    -                    1.016                -                    -                    -                  
+CMSRunII_eff_m          lnN                    1.023                -                    -                    -                    1.022                -                    -                    -                  
+CMSRunII_eff_met        lnN                    1.017                -                    -                    -                    1.016                -                    -                    -                  
+CMSRunII_lumi           lnN                    1.025                -                    -                    -                    1.025                -                    -                    -                  
+CMSRunII_res_mass       lnN                    0.899/1.112          -                    -                    -                    0.899/1.112          -                    -                    -                  
+CMSRunII_scale_e        lnN                    1.01                 -                    -                    -                    1.01                 -                    -                    -                  
+CMSRunII_scale_m        lnN                    1.01                 -                    -                    -                    1.01                 -                    -                    -                  
+CMSRunII_scale_mass     lnN                    1.01                 -                    -                    -                    1.01                 -                    -                    -                  
+CMSRunII_scale_pu       lnN                    1.001                -                    -                    -                    1.001                -                    -                    -                  
+pdf_accept              lnN                    1.01                 -                    -                    -                    1.01                 -                    -                    -                  
+pdf_scale               lnN                    1.361/0.639          -                    -                    -                    1.361/0.639          -                    -                    -                  
+qcd_scale               lnN                    1.135/0.888          -                    -                    -                    1.135/0.888          -                    -                    -                  
+CMSRunII_sig_p4_fit  param  0.0 1.0
+CMSRunII_Top_mmbbVBF_eig0  param  0.0 1.0
+CMSRunII_sig_p2_scale_m  param  0.0 1.0
+CMSRunII_sig_p2_fit  param  0.0 1.0
+CMSRunII_sig_p2_scale_e  param  0.0 1.0
+CMSRunII_sig_p1_jes  param  0.0 1.0
+CMSRunII_Vjets_mmbbVBF_eig2  param  0.0 1.0
+CMSRunII_sig_p1_fit  param  0.0 1.0
+CMSRunII_Vjets_mmbbVBF_eig3  param  0.0 1.0
+CMSRunII_Vjets_mmbbVBF_eig1  param  0.0 1.0
+CMSRunII_Vjets_mmbbVBF_eig0  param  0.0 1.0
+CMSRunII_Vjets_mm0bVBF_eig5  param  0.0 1.0
+CMSRunII_Vjets_mm0bVBF_eig4  param  0.0 1.0
+CMSRunII_Vjets_mm0bVBF_eig3  param  0.0 1.0
+CMSRunII_Vjets_mm0bVBF_eig2  param  0.0 1.0
+CMSRunII_Vjets_mm0bVBF_eig1  param  0.0 1.0
+CMSRunII_Vjets_mm0bVBF_eig0  param  0.0 1.0
+CMSRunII_Vjets_mmbbVBF_eig5  param  0.0 1.0
+CMSRunII_sig_p2_jer  param  0.0 1.0
+CMSRunII_sig_p2_jes  param  0.0 1.0
+CMSRunII_Vjets_mmbbVBF_eig4  param  0.0 1.0
+CMSRunII_Top_mm0bVBF_eig0  param  0.0 1.0
+CMSRunII_Top_mm0bVBF_eig1  param  0.0 1.0
+CMSRunII_sig_p3_fit  param  0.0 1.0
+CMSRunII_sig_p1_scale_e  param  0.0 1.0
+CMSRunII_VV_mmbbVBF_eig0  param  0.0 1.0
+CMSRunII_VV_mmbbVBF_eig1  param  0.0 1.0
+CMSRunII_sig_p1_scale_m  param  0.0 1.0
+CMSRunII_Top_mmbbVBF_eig1  param  0.0 1.0
+CMSRunII_VV_mm0bVBF_eig0  param  0.0 1.0
+CMSRunII_VV_mm0bVBF_eig1  param  0.0 1.0
+shapeS group = CMSRunII_sig_p3_fit CMSRunII_sig_p4_fit CMSRunII_sig_p2_scale_m CMSRunII_sig_p1_scale_e CMSRunII_sig_p2_scale_e CMSRunII_sig_p1_scale_m CMSRunII_sig_p1_jes CMSRunII_sig_p1_fit CMSRunII_sig_p2_fit CMSRunII_sig_p2_jer CMSRunII_sig_p2_jes
+shape2 group = CMSRunII_Top_mm0bVBF_eig0 CMSRunII_Top_mm0bVBF_eig1 CMSRunII_Top_mmbbVBF_eig0 CMSRunII_Top_mmbbVBF_eig1 CMSRunII_VV_mmbbVBF_eig0 CMSRunII_VV_mmbbVBF_eig1 CMSRunII_VV_mm0bVBF_eig0 CMSRunII_VV_mm0bVBF_eig1
+shape1 group = CMSRunII_Vjets_mmbbVBF_eig2 CMSRunII_Vjets_mmbbVBF_eig3 CMSRunII_Vjets_mmbbVBF_eig1 CMSRunII_Vjets_mmbbVBF_eig0 CMSRunII_Vjets_mm0bVBF_eig5 CMSRunII_Vjets_mm0bVBF_eig4 CMSRunII_Vjets_mm0bVBF_eig3 CMSRunII_Vjets_mm0bVBF_eig2 CMSRunII_Vjets_mm0bVBF_eig1 CMSRunII_Vjets_mm0bVBF_eig0 CMSRunII_Vjets_mmbbVBF_eig5 CMSRunII_Vjets_mmbbVBF_eig4
+theory group = pdf_scale qcd_scale
+norm group = CMSRunII_Vjets_mmbbVBF_norm CMSRunII_Vjets_mm0bVBF_altf CMSRunII_Vjets_mmbbVBF_altf CMSRunII_Vjets_mm0bVBF_norm

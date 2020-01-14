@@ -1,0 +1,85 @@
+Combination of mm0b=XZHmm0b_M3500.txt  mmbb=XZHmmbb_M3500.txt
+imax 2 number of bins
+jmax 7 number of processes minus 1
+kmax 56 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes Top_mm0b       mm0b           workspace/mm0b.root ZH_RunII:$PROCESS
+shapes VV_mm0b        mm0b           workspace/mm0b.root ZH_RunII:$PROCESS
+shapes Vjets_mm0b     mm0b           workspace/mm0b.root ZH_RunII:$PROCESS
+shapes XZHmm0b_M3500  mm0b           workspace/XZHmm0b.root ZH_RunII:$PROCESS
+shapes data_obs       mm0b           workspace/mm0b.root ZH_RunII:data_obs
+shapes Top_mmbb       mmbb           workspace/mmbb.root ZH_RunII:$PROCESS
+shapes VV_mmbb        mmbb           workspace/mmbb.root ZH_RunII:$PROCESS
+shapes Vjets_mmbb     mmbb           workspace/mmbb.root ZH_RunII:$PROCESS
+shapes XZHmmbb_M3500  mmbb           workspace/XZHmmbb.root ZH_RunII:$PROCESS
+shapes data_obs       mmbb           workspace/mmbb.root ZH_RunII:data_obs
+----------------------------------------------------------------------------------------------------------------------------------
+bin          mm0b         mmbb       
+observation  -1           -1         
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                         mm0b           mm0b           mm0b           mm0b           mmbb           mmbb           mmbb           mmbb         
+process                                     XZHmm0b_M3500  VV_mm0b        Top_mm0b       Vjets_mm0b     XZHmmbb_M3500  Top_mmbb       VV_mmbb        Vjets_mmbb   
+process                                     -1             1              2              3              0              4              5              6            
+rate                                        1              20.058067      4.90027        388.847812     1              2.585096       7.589215       57.963786    
+----------------------------------------------------------------------------------------------------------------------------------
+CMSRunII_Top_mm0b_norm   lnN                -              -              1.571          -              -              -              -              -            
+CMSRunII_Top_mm0b_sf    lnN                 -              -              1.009          -              -              -              -              -            
+CMSRunII_Top_mmbb_norm   lnN                -              -              -              -              -              1.348          -              -            
+CMSRunII_Top_mmbb_sf    lnN                 -              -              -              -              -              1.035          -              -            
+CMSRunII_VV_mm0b_norm   lnN                 -              1.05           -              -              -              -              -              -            
+CMSRunII_VV_mmbb_norm   lnN                 -              -              -              -              -              -              1.936          -            
+CMSRunII_Vjets_mm0b_altf   lnN              -              -              -              1.114          -              -              -              -            
+CMSRunII_Vjets_mm0b_norm   lnN              -              -              -              1.031          -              -              -              -            
+CMSRunII_Vjets_mmbb_altf   lnN              -              -              -              -              -              -              -              1.006        
+CMSRunII_Vjets_mmbb_norm   lnN              -              -              -              -              -              -              -              1.084        
+CMSRunII_eff_H          lnN                 1.06           -              -              -              1.06           -              -              -            
+CMSRunII_eff_V          lnN                 1.11           -              -              -              -              -              -              -            
+CMSRunII_eff_b          lnN                 1.026          1.031          0.986          -              0.961          0.986          1.045          -            
+CMSRunII_eff_e          lnN                 1.016          -              -              -              1.019          -              -              -            
+CMSRunII_eff_m          lnN                 1.021          -              -              -              1.024          -              -              -            
+CMSRunII_eff_met        lnN                 1.016          -              -              -              1.019          -              -              -            
+CMSRunII_lumi           lnN                 1.025          -              -              -              1.025          -              -              -            
+CMSRunII_res_mass       lnN                 0.899/1.112    -              -              -              0.899/1.112    -              -              -            
+CMSRunII_scale_e        lnN                 1.01           -              -              -              1.01           -              -              -            
+CMSRunII_scale_m        lnN                 1.01           -              -              -              1.01           -              -              -            
+CMSRunII_scale_mass     lnN                 1.01           -              -              -              1.01           -              -              -            
+CMSRunII_scale_pu       lnN                 1.001          -              -              -              1.001          -              -              -            
+pdf_accept              lnN                 1.01           -              -              -              1.01           -              -              -            
+pdf_scale               lnN                 1.222/0.778    -              -              -              1.222/0.778    -              -              -            
+qcd_scale               lnN                 1.122/0.897    -              -              -              1.122/0.897    -              -              -            
+CMSRunII_Vjets_mmbb_eig3  param  0.0 1.0
+CMSRunII_VV_mmbb_eig1  param  0.0 1.0
+CMSRunII_VV_mmbb_eig0  param  0.0 1.0
+CMSRunII_sig_p4_fit  param  0.0 1.0
+CMSRunII_sig_p2_scale_m  param  0.0 1.0
+CMSRunII_sig_p2_fit  param  0.0 1.0
+CMSRunII_sig_p2_scale_e  param  0.0 1.0
+CMSRunII_sig_p1_jes  param  0.0 1.0
+CMSRunII_Vjets_mmbb_eig0  param  0.0 1.0
+CMSRunII_Vjets_mmbb_eig1  param  0.0 1.0
+CMSRunII_Vjets_mmbb_eig2  param  0.0 1.0
+CMSRunII_sig_p1_fit  param  0.0 1.0
+CMSRunII_Vjets_mmbb_eig4  param  0.0 1.0
+CMSRunII_Vjets_mmbb_eig5  param  0.0 1.0
+CMSRunII_VV_mm0b_eig1  param  0.0 1.0
+CMSRunII_VV_mm0b_eig0  param  0.0 1.0
+CMSRunII_sig_p2_jer  param  0.0 1.0
+CMSRunII_sig_p2_jes  param  0.0 1.0
+CMSRunII_sig_p3_fit  param  0.0 1.0
+CMSRunII_Top_mmbb_eig1  param  0.0 1.0
+CMSRunII_Top_mmbb_eig0  param  0.0 1.0
+CMSRunII_sig_p1_scale_e  param  0.0 1.0
+CMSRunII_sig_p1_scale_m  param  0.0 1.0
+CMSRunII_Vjets_mm0b_eig2  param  0.0 1.0
+CMSRunII_Vjets_mm0b_eig3  param  0.0 1.0
+CMSRunII_Vjets_mm0b_eig0  param  0.0 1.0
+CMSRunII_Vjets_mm0b_eig1  param  0.0 1.0
+CMSRunII_Vjets_mm0b_eig4  param  0.0 1.0
+CMSRunII_Vjets_mm0b_eig5  param  0.0 1.0
+CMSRunII_Top_mm0b_eig1  param  0.0 1.0
+CMSRunII_Top_mm0b_eig0  param  0.0 1.0
+shapeS group = CMSRunII_sig_p3_fit CMSRunII_sig_p4_fit CMSRunII_sig_p2_scale_m CMSRunII_sig_p1_scale_e CMSRunII_sig_p2_scale_e CMSRunII_sig_p1_scale_m CMSRunII_sig_p1_jes CMSRunII_sig_p1_fit CMSRunII_sig_p2_fit CMSRunII_sig_p2_jer CMSRunII_sig_p2_jes
+shape2 group = CMSRunII_VV_mmbb_eig1 CMSRunII_VV_mmbb_eig0 CMSRunII_Top_mmbb_eig1 CMSRunII_Top_mmbb_eig0 CMSRunII_VV_mm0b_eig1 CMSRunII_VV_mm0b_eig0 CMSRunII_Top_mm0b_eig1 CMSRunII_Top_mm0b_eig0
+shape1 group = CMSRunII_Vjets_mm0b_eig2 CMSRunII_Vjets_mm0b_eig3 CMSRunII_Vjets_mm0b_eig0 CMSRunII_Vjets_mm0b_eig1 CMSRunII_Vjets_mm0b_eig4 CMSRunII_Vjets_mm0b_eig5 CMSRunII_Vjets_mmbb_eig0 CMSRunII_Vjets_mmbb_eig1 CMSRunII_Vjets_mmbb_eig2 CMSRunII_Vjets_mmbb_eig3 CMSRunII_Vjets_mmbb_eig4 CMSRunII_Vjets_mmbb_eig5
+theory group = pdf_scale qcd_scale
+norm group = CMSRunII_Vjets_mm0b_altf CMSRunII_Vjets_mmbb_norm CMSRunII_Vjets_mm0b_norm CMSRunII_Vjets_mmbb_altf
