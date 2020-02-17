@@ -680,7 +680,7 @@ def limitCompare(method):
 
 
 if options.all:
-    for c in ["XZHnnbb", "XZHnn0b", "XZHeebb", "XZHee0b", "XZHmmbb", "XZHmm0b", "XZHVBFnnbbVBF", "XZHVBFnn0bVBF", "XZHVBFeebbVBF", "XZHVBFee0bVBF", "XZHVBFmmbbVBF", "XZHVBFmm0bVBF", "XZHslbb", "XZHsl0b", "XZHslbbVBF", "XZHsl0bVBF", "XZHslcomb"]:
+    for c in ["XZHnnbb", "XZHnn0b", "XZHeebb", "XZHee0b", "XZHmmbb", "XZHmm0b", "XZHVBFnnbbVBF", "XZHVBFnn0bVBF", "XZHVBFeebbVBF", "XZHVBFee0bVBF", "XZHVBFmmbbVBF", "XZHVBFmm0bVBF", "XZHsl","XZHslbb", "XZHsl0b", "XZHslbbVBF", "XZHsl0bVBF", "XZHslcomb"]:
         limit(options.method, c)
 else:
     if not options.method=="2HDM": 

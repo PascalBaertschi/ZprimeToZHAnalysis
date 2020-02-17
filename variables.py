@@ -35,6 +35,41 @@ variable = {
         'max' : 250,
         'log' : False,
     },
+    'H_mass_nom': {
+        'title' : "jet soft drop mass nom (GeV)",
+        'nbins' : 44,
+        'min' : 30,
+        'max' : 250,
+        'log' : False,
+    },
+    'H_mass_jmsUp': {
+        'title' : "jet soft drop mass JMS Up (GeV)",
+        'nbins' : 44,
+        'min' : 30,
+        'max' : 250,
+        'log' : False,
+    },
+    'H_mass_jmsDown': {
+        'title' : "jet soft drop mass JMS Down (GeV)",
+        'nbins' : 44,
+        'min' : 30,
+        'max' : 250,
+        'log' : False,
+    },
+    'H_mass_jmrUp': {
+        'title' : "jet soft drop mass JMR Up (GeV)",
+        'nbins' : 44,
+        'min' : 30,
+        'max' : 250,
+        'log' : False,
+    },
+    'H_mass_jmrDown': {
+        'title' : "jet soft drop mass JMR Down (GeV)",
+        'nbins' : 44,
+        'min' : 30,
+        'max' : 250,
+        'log' : False,
+    },
     'H_tau21': {
         'title' : "AK8 jet #tau_{21}",
         'nbins' : 50,
@@ -294,6 +329,13 @@ variable = {
         'max' : 5,
         'log' : False,
     },
+    'Mu1_highPtId': {
+        'title' : "muon 1 high pT Id",
+        'nbins' : 36,
+        'min' : 0,
+        'max' : 5,
+        'log' : False,
+    },
     'Mu2_pt': {
         'title' : "muon 2 p_{T} (GeV)",
         'nbins' : 36,
@@ -310,6 +352,13 @@ variable = {
     },
     'Mu2_relIso': {
         'title' : "muon 2 relIso",
+        'nbins' : 36,
+        'min' : 0,
+        'max' : 5,
+        'log' : False,
+    },
+    'Mu2_highPtId': {
+        'title' : "muon 2 high pT Id",
         'nbins' : 36,
         'min' : 0,
         'max' : 5,
@@ -341,6 +390,20 @@ variable = {
         'nbins' : 36,
         'min' : -3,
         'max' : 3,
+        'log' : False,
+    },
+    'Jet1_VBF_eta': {
+        'title' : "VBF jet #eta",
+        'nbins' : 36,
+        'min' : -5,
+        'max' : 5,
+        'log' : False,
+    },
+    'Jet2_VBF_eta': {
+        'title' : "VBF jet #eta",
+        'nbins' : 36,
+        'min' : -5,
+        'max' : 5,
         'log' : False,
     },
     'V_pt': {
@@ -523,6 +586,76 @@ variable = {
         'nbins' : 40, #10 15
         'min' : 750,
         'max' : 5750, #2750 3750 6750
+        'log' : True,
+    },
+    'X_mass_nom': {
+        'title' : "m_{X} (GeV)",
+        'nbins' : 40, #10 15
+        'min' : 750,
+        'max' : 5750, #2750 3750 6750
+        'log' : True,
+    },
+    'X_mass_jesUp': {
+        'title' : "m_{X} JES Up (GeV)",
+        'nbins' : 40, #10 15
+        'min' : 750,
+        'max' : 5750, #2750 3750 6750
+        'log' : True,
+    },
+    'X_mass_jesDown': {
+        'title' : "m_{X} JES Down (GeV)",
+        'nbins' : 40, #10 15
+        'min' : 750,
+        'max' : 5750, #2750 3750 6750
+        'log' : True,
+    },
+    'X_mass_jerUp': {
+        'title' : "m_{X} JER Up (GeV)",
+        'nbins' : 40, #10 15
+        'min' : 750,
+        'max' : 5750, #2750 3750 6750
+        'log' : True,
+    },
+    'X_mass_jerDown': {
+        'title' : "m_{X} JER Down (GeV)",
+        'nbins' : 40, #10 15
+        'min' : 750,
+        'max' : 5750, #2750 3750 6750
+        'log' : True,
+    },
+    'X_mass_MET_nom': {
+        'title' : "m_{X} MET nom (GeV)",
+        'nbins' : 40,
+        'min' : 750,
+        'max' : 5750,
+        'log' : True,
+    },
+    'X_mass_MET_jesUp': {
+        'title' : "m_{X} MET JES Up (GeV)",
+        'nbins' : 40,
+        'min' : 750,
+        'max' : 5750,
+        'log' : True,
+    },
+    'X_mass_MET_jesDown': {
+        'title' : "m_{X} MET JES Down (GeV)",
+        'nbins' : 40,
+        'min' : 750,
+        'max' : 5750,
+        'log' : True,
+    },
+    'X_mass_MET_jerUp': {
+        'title' : "m_{X} MET JER Up (GeV)",
+        'nbins' : 40,
+        'min' : 750,
+        'max' : 5750,
+        'log' : True,
+    },
+    'X_mass_MET_jerDown': {
+        'title' : "m_{X} MET JER Down (GeV)",
+        'nbins' : 40,
+        'min' : 750,
+        'max' : 5750,
         'log' : True,
     },
     'CosThetaStar': {

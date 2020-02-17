@@ -14,18 +14,18 @@ observation       -1.0
 bin                                               ee0b                ee0b                ee0b                ee0b                
 process                                           XZHee0b_M1000       Vjets_ee0b          Top_ee0b            VV_ee0b             
 process                                           0                   1                   2                   3                   
-rate                                              1.000000            175.650673          4.913308            16.884860           
+rate                                              1.000000            348.275074          5.235070            15.250053           
 -----------------------------------------------------------------------------------
-CMSRunII_Vjets_ee0b_norm                lnN       -                   1.050               -                   -                   
-CMSRunII_Vjets_ee0b_altf                lnN       -                   1.032               -                   -                   
-CMSRunII_Top_ee0b_norm                  lnN       -                   -                   1.098               -                   
-CMSRunII_VV_ee0b_norm                   lnN       -                   -                   -                   1.062               
+CMSRunII_Vjets_ee0b_norm                lnN       -                   1.034               -                   -                   
+CMSRunII_Vjets_ee0b_altf                lnN       -                   1.001               -                   -                   
+CMSRunII_Top_ee0b_norm                  lnN       -                   -                   1.083               -                   
+CMSRunII_VV_ee0b_norm                   lnN       -                   -                   -                   1.009               
 CMSRunII_Top_ee0b_sf                    lnN       -                   -                   1.009               -                   
-CMSRunII_eff_b                          lnN       0.991               -                   0.986               1.031               
-CMSRunII_eff_e                          lnN       -                   -                   1.087               1.147               
-CMSRunII_eff_m                          lnN       -                   -                   1.000               1.060               
+CMSRunII_eff_b                          lnN       1.009               -                   0.986               1.031               
+CMSRunII_eff_e                          lnN       -                   -                   1.089               1.093               
+CMSRunII_eff_m                          lnN       -                   -                   1.000               1.004               
 CMSRunII_eff_t                          lnN       -                   -                   -                   1.000               
-CMSRunII_eff_met                        lnN       -                   -                   -                   1.060               
+CMSRunII_eff_met                        lnN       -                   -                   -                   1.004               
 CMSRunII_scale_mass                     lnN       -                   -                   -                   1.063               
 CMSRunII_res_mass                       lnN       -                   -                   -                   1.063               
 CMSRunII_scale_pu                       lnN       -                   -                   -                   1.010               
@@ -35,15 +35,15 @@ pdf_scale                               lnN       -                   -         
 qcd_scale                               lnN       -                   -                   1.010               1.189               
 CMSRunII_eff_H                          lnN       1.060               -                   -                   -                   
 CMSRunII_eff_V                          lnN       1.110               -                   -                   -                   
-CMSRunII_eff_e                          lnN       1.147               -                   -                   -                   
-CMSRunII_eff_m                          lnN       1.060               -                   -                   -                   
-CMSRunII_eff_met                        lnN       1.060               -                   -                   -                   
+CMSRunII_eff_e                          lnN       1.093               -                   -                   -                   
+CMSRunII_eff_m                          lnN       1.004               -                   -                   -                   
+CMSRunII_eff_met                        lnN       1.004               -                   -                   -                   
 CMSRunII_eff_t                          lnN       1.000               -                   -                   -                   
-CMSRunII_lumi                           lnN       1.025               -                   -                   -                   
-CMSRunII_res_mass                       lnN       0.899/1.112         -                   -                   -                   
+CMSRunII_lumi                           lnN       1.014               -                   -                   -                   
+CMSRunII_res_mass                       lnN       0.910/1.090         -                   -                   -                   
 CMSRunII_scale_e                        lnN       1.010               -                   -                   -                   
 CMSRunII_scale_m                        lnN       1.010               -                   -                   -                   
-CMSRunII_scale_mass                     lnN       1.010               -                   -                   -                   
+CMSRunII_scale_mass                     lnN       1.006               -                   -                   -                   
 CMSRunII_scale_pu                       lnN       1.001               -                   -                   -                   
 pdf_accept                              lnN       1.010               -                   -                   -                   
 pdf_scale                               lnN       1.067/0.933         -                   -                   -                   

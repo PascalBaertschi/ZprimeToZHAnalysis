@@ -1,61 +1,139 @@
 #! /usr/bin/env python
 
-import os, sys, getopt
-import copy, math
+import os, multiprocessing
+import copy
+import math
+import numpy as np
 from array import array
-from ROOT import gROOT, gStyle, gRandom
-from ROOT import TFile, TChain, TTree, TCut, TH1F, TH2F, TF1, THStack, TGraph, TGraphErrors, TGraphAsymmErrors, TGaxis, TVirtualFitter
-from ROOT import TStyle, TCanvas, TPad, TLegend, TLatex, TText, TPoint
+from ROOT import ROOT, gROOT, gStyle, gRandom, TSystemDirectory
+from ROOT import TFile, TChain, TTree, TCut, TF1, TH1F, TH2F, THStack
+from ROOT import TGraph, TGraphErrors, TGraphAsymmErrors, TVirtualFitter
+from ROOT import TStyle, TCanvas, TPad, TCanvas
+from ROOT import TLegend, TLatex, TText, TLine, TPaveText
+from xsections import xsection
 
 from samples import sample_2016, sample_2017, sample_2018, sample
 from variables import variable
 from selections import selection
 from utils import *
 
-gROOT.SetBatch(True)
+########## SETTINGS ##########
+
+import optparse
+usage = "usage: %prog [options]"
+parser = optparse.OptionParser(usage)
+parser.add_option("-v", "--variable", action="store", type="string", dest="variable", default="")
+parser.add_option("-c", "--cut", action="store", type="string", dest="cut", default="")
+parser.add_option("-y", "--year",action="store", type="string", dest="year", default="combined")
+parser.add_option("-s", "--syst", action="store_true", default=False, dest="syst")
+parser.add_option("-e", "--effb", action="store_true", default=False, dest="effb")
+parser.add_option("-j", "--jec", action="store_true", default=False, dest="jec")
+parser.add_option("-m", "--jmc", action="store_true", default=False, dest="jmc")
+parser.add_option("-b", "--bash", action="store_true", default=False, dest="bash")
+parser.add_option("-B", "--blind", action="store_true", default=False, dest="blind")
+parser.add_option("-f", "--final", action="store_true", default=False, dest="final")
+(options, args) = parser.parse_args()
+if options.bash: gROOT.SetBatch(True)
+
+########## SETTINGS ##########
+
+#gROOT.SetBatch(True)
+#gROOT.ProcessLine("TSystemDirectory::SetDirectory(0)")
+#gROOT.ProcessLine("TH1::AddDirectory(kFALSE);")
 gStyle.SetOptStat(0)
-gStyle.SetOptTitle(0)
-gStyle.SetPadTopMargin(0.06)
-gStyle.SetPadRightMargin(0.06)
+#TSystemDirectory.SetDirectory(0)
 
-#gStyle.SetErrorX(1)
-NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/combined_weighted/"
-RATIO       = 4
 
+year        = options.year
+cut         = options.cut
+
+if year in ['2016','2017','2018']:
+    NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/Ntuples%s/"%(year)
+else:
+    NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/"
+OUTPUTDIR = "/work/pbaertsc/heavy_resonance/ZprimeToZHAnalysis/plots_%s/"%(year)
+
+SIGNAL      = 1 # Signal magnification factor
+RATIO       = 4 # 0: No ratio plot; !=0: ratio between the top and bottom pads
+PARALLELIZE = False
+BLIND = True
+
+if year=='2016':
+    LUMI=35920.
+    sample=sample_2016
+elif year=='2017':
+    LUMI=41530.
+    sample=sample_2017
+elif year=='2018':
+    LUMI=59740.
+    sample=sample_2018
+elif year=='combined':
+    LUMI=137190
 ########## SAMPLES ##########
 data = ['data_obs']
 back = ["VV", "ST", "TTbarSL", "WJetsToLNu_HT", "DYJetsToNuNu_HT", "DYJetsToLL_HT"] 
-sign = ['XZH_M800','XZH_M1000','XZH_M1200','XZH_M1400','XZH_M1600', 'XZH_M1800', 'XZH_M2000', 'XZH_M2500','XZH_M3000','XZH_M3500', 'XZH_M4000','XZH_M4500','XZH_M5000','XZH_M5500','XZH_M6000']
+sign = ['XZH_M800','XZH_M1000','XZH_M1200','XZH_M1400','XZH_M1600', 'XZH_M1800', 'XZH_M2000', 'XZH_M2500','XZH_M3000','XZH_M3500', 'XZH_M4000','XZH_M4500','XZH_M5000']
+sign_VBF = ['XZHVBF_M800','XZHVBF_M1000','XZHVBF_M1200','XZHVBF_M1400','XZHVBF_M1600', 'XZHVBF_M1800', 'XZHVBF_M2000', 'XZHVBF_M2500','XZHVBF_M3000','XZHVBF_M3500', 'XZHVBF_M4000','XZHVBF_M4500','XZHVBF_M5000']
+#sign = ['XZH_M2000']
+#sign = []
 
-colors = [616+4, 632, 800+7, 800, 416+1, 860+10, 600, 616, 921, 922]
 
-def systematics(sys, isShape=False, antiCorr=False):
+########## ######## ##########
+
+jobs = []
+
+def plot(var, cut, nm1=False):
+    ### Preliminary Operations ###
     treeRead = True
-    file = {}
-    hist = {}
-    tree = {}
-    histUp = {}
-    histDown = {}
-    up = {}
-    down = {}
-    gUp = TGraph()
-    gDown = TGraph()
-    gUp.SetLineWidth(3)
-    gDown.SetLineWidth(3)
-    gUp.SetLineColor(632)
-    gDown.SetLineColor(602)
+    channel = cut
     BTagAK4deepup = False
     BTagAK4deepdown = False
     BTagAK4deep = False
     BTagAK8deepup = False
     BTagAK8deepdown = False
     BTagAK8deep = False
-#    g.SetMarkerStyle(20)
-#    g.SetMarkerColor(418)
-#    g.SetMarkerSize(1.25)
-    var = sys
-    cut = 'nnbbSR'
-    if var=='BTagAK4Weight_deep_up':
+    if 'inc' in cut:
+        eventWeightLuminame = 'eventWeightLumi_nobtag'
+    else:
+        eventWeightLuminame = 'eventWeightLumi'
+    if "SB" in cut or "SR" in cut:
+        channel_name = cut[:-2]
+    else:
+        channel_name = cut
+    isBlind = BLIND and 'SR' in channel
+
+    if year in ['2016','2017','2018']:
+        NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/Ntuples%s/"%(year)
+    else:
+        NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/"
+    #showSignal = False if 'SB' in cut or 'TR' in cut else True #'SR' in channel or channel=='qqqq'#or len(channel)==5
+    if var in ['dijet_VBF_mass','deltaR_VBF','deltaR_HVBFjet1','deltaR_HVBFjet2']:
+        showSignal = False
+    else:
+        showSignal = True
+    if "cutflow" in var:
+        showSignal = False
+    if var in ['X_mass_jesUp','X_mass_jesDown','X_mass_jerUp','X_mass_jerDown','X_mass_nom','X_mass_MET_jesUp','X_mass_MET_jesDown','X_mass_MET_jerUp','X_mass_MET_jerDown','X_mass_MET_nom','H_mass_jmsUp','H_mass_jmsDown','H_mass_jmrUp','H_mass_jmrDown','H_mass_nom']:
+        back = ["VV"]
+    else:
+        back = ["VV", "ST", "TTbarSL", "WJetsToLNu_HT", "DYJetsToNuNu_HT", "DYJetsToLL_HT"] 
+    stype = "HVT model B"
+    if channel.endswith('up'):
+        TopBTagAK4deepup = True
+        channel = channel[:-2]
+        cut = channel
+    if channel.endswith('down'):
+        TopBTagAK4deepdown = True
+        channel = channel[:-4]
+        cut = channel
+    if treeRead:
+        for k in sorted(selection.keys(), key=len, reverse=True):
+            if k in cut: cut = cut.replace(k, selection[k])
+  
+    # Determine Primary Dataset
+    pd = []
+
+    if var=='BTagAK4Weightdeep_up':
         var = 'X_mass'
         BTagAK4deepup = True
     elif var=='BTagAK4Weight_deep_down':
@@ -72,219 +150,273 @@ def systematics(sys, isShape=False, antiCorr=False):
         BTagAK8deepdown = True
     elif var=='BTagAK8Weight_deep':
         var = 'X_mass'
-        BTagAK8deep = True 
-    upAvg, downAvg, upMin, downMin, upMax, downMax = 0., 0., 2., 2., 0., 0.
-    for k in sorted(selection.keys(), key=len, reverse=True):
-        if k in cut: 
-            cut = cut.replace(k, selection[k])
-    for i, s in enumerate(sign):
-        if '_MZ' in s: m = int((s.split('_MZ')[1]).split('_MA')[0])
-        elif '_M' in s: m = int(s.split('_M')[1])
-        else: m = 0
+        BTagAK8deep = True   
+
+    print "Plotting from", ("tree" if treeRead else "file"), var, "in", channel, "channel with:"
+    print "  dataset:", pd
+    print "  cut    :", cut
+    
+    ### Create and fill MC histograms ###
+    # Create dict
+    file = {}
+    tree = {}
+    hist = {}
+    ### Create and fill MC histograms ###
+    for i, s in enumerate(back+sign+sign_VBF):
         if treeRead: # Project from tree
             tree[s] = TChain("tree")
             for j, ss in enumerate(sample[s]['files']):
                 if not 'data' in s or ('data' in s and ss in pd):
                     tree[s].Add(NTUPLEDIR + ss + ".root")
             if variable[var]['nbins']>0: 
-                min_value = variable[var]['min']
-                max_value =variable[var]['max']
+                if 'X_mass' in var:
+                    min_value = 0.0
+                    max_value = 6000.
+                else:
+                    min_value = variable[var]['min']
+                    max_value =variable[var]['max']
                 title = variable[var]['title']
-                if 'isZtoNN' in cut:
-                    if var == 'MET':
-                        min_value = 200
-                        max_value = 2000
-                    elif var == 'DPhi':
-                        title = "#Delta #varphi (AK8 jet-#slash{E}_{T})"
-                    elif var == 'VH_deltaR':
-                        title = "#Delta R (#slash{E}_{T}, AK8 jet)"
                 hist[s] = TH1F(s, ";"+title+";Events;"+('log' if variable[var]['log'] else ''), variable[var]['nbins'], min_value, max_value)
             else: hist[s] = TH1F(s, ";"+variable[var]['title'], len(variable[var]['bins'])-1, array('f', variable[var]['bins']))
             hist[s].Sumw2()
-            cutstring = "(eventWeightLumi)" + ("*("+cut+")")
+            cutstring = "%s" % eventWeightLuminame + ("*("+cut+")") 
             if var=='LeptonWeightUp':
-                cutstring = "(eventWeightLumi * LeptonWeightUp/LeptonWeight)" + ("*("+cut+")") 
+                cutstring = "(%s * LeptonWeightUp/LeptonWeight)" % eventWeightLuminame  + ("*("+cut+")") 
             elif var=='LeptonWeightDown':
-                cutstring = "(eventWeightLumi * LeptonWeightDown/LeptonWeight)" + ("*("+cut+")") 
+                cutstring = "(%s * LeptonWeightDown/LeptonWeight)" % eventWeightLuminame  + ("*("+cut+")") 
             elif var=='TriggerWeightUp':
-                cutstring = "(eventWeightLumi * TriggerWeightUp/TriggerWeight)" + ("*("+cut+")") 
+                cutstring = "(%s * TriggerWeightUp/TriggerWeight)" % eventWeightLuminame + ("*("+cut+")") 
             elif var=='TriggerWeightDown':
-                cutstring = "(eventWeightLumi * TriggerWeightDown/TriggerWeight)" + ("*("+cut+")") 
-            #division by BTagAk4Weight_deep is because the weighted samples are used
+                cutstring = "(%s * TriggerWeightDown/TriggerWeight)" % eventWeightLuminame  + ("*("+cut+")") 
+            #division by BTagAk8Weight_deep is because the weighted samples are used
+            elif BTagAK4deep:
+                cutstring = "(%s * BTagAK4Weight_deep)" % eventWeightLuminame + ("*("+cut+")")
             elif BTagAK4deepup:
-                cutstring = "(eventWeightLumi * BTagAK4Weight_deep_up/BTagAK4Weight_deep)" + ("*("+cut+")") 
+                cutstring = "(%s * BTagAK4Weight_deep_up)" % eventWeightLuminame + ("*("+cut+")") 
             elif BTagAK4deepdown:
-                cutstring = "(eventWeightLumi * BTagAK4Weight_deep_down/BTagAK4Weight_deep)" + ("*("+cut+")") 
-            elif BTagAK8deep:
-                cutstring = "(eventWeightLumi * BTagAK8Weight_deep)" + ("*("+cut+")")    
+                cutstring = "(%s * BTagAK4Weight_deep_down)" % eventWeightLuminame + ("*("+cut+")") 
             elif BTagAK8deepup:
-                cutstring = "(eventWeightLumi * BTagAK8Weight_deep_up)" + ("*("+cut+")") 
+                cutstring = "(%s * BTagAK8Weight_deep_up/BTagAK8Weight_deep)" % eventWeightLuminame  + ("*("+cut+")") 
             elif BTagAK8deepdown:
-                cutstring = "(eventWeightLumi * BTagAK8Weight_deep_down)" + ("*("+cut+")")     
+                cutstring = "(%s * BTagAK8Weight_deep_down/BTagAK8Weight_deep)" % eventWeightLuminame  + ("*("+cut+")")    
             tree[s].Project(s, var, cutstring)
             if not tree[s].GetTree()==None: hist[s].SetOption("%s" % tree[s].GetTree().GetEntriesFast())
-        """
-        for j, ss in enumerate(sample[s]['files']):
-            file[ss] = TFile(NTUPLEDIR + ss + ".root", "READ")
-            tmp = file[ss].Get("Sys/"+sys)
-            if tmp == None: continue
-            if not s in hist.keys(): hist[s] = tmp
+            #print tree[s].GetTree().GetEntriesFast()
+        hist[s].Scale(sample[s]['weight'] if hist[s].Integral() >= 0 else 0)
+        hist[s].SetFillColor(sample[s]['fillcolor'])
+        hist[s].SetFillStyle(sample[s]['fillstyle'])
+        hist[s].SetLineColor(sample[s]['linecolor'])
+        hist[s].SetLineStyle(sample[s]['linestyle'])
+    
+    hist['BkgSum'] = hist['data_obs'].Clone("BkgSum") if 'data_obs' in hist else hist[back[0]].Clone("BkgSum")
+    hist['BkgSum'].Reset("MICES")
+    hist['BkgSum'].SetFillStyle(3003)
+    hist['BkgSum'].SetFillColor(1)
+    for i, s in enumerate(back): 
+        hist['BkgSum'].Add(hist[s])
+       # Set histogram style
+    
+    for i, s in enumerate(back+sign+sign_VBF+['BkgSum']): addOverflow(hist[s], False) # Add overflow
+    for i, s in enumerate(sign+sign_VBF): hist[s].SetLineWidth(3)
+    for i, s in enumerate(sign+sign_VBF): sample[s]['plot'] = True#sample[s]['plot'] and s.startswith(channel[:2])
+
+    
+    # Create stack
+    bkg = THStack("Bkg", ";"+hist['BkgSum'].GetXaxis().GetTitle()+";Events")
+    for i, s in enumerate(back): bkg.Add(hist[s])
+    return hist
+
+def calc_syst():
+    Integral = 0.
+    Integral_up = 0.
+    Integral_down = 0.
+    syst_trig = []
+    syst_elec = []
+    syst_muon = []
+    for cut in ['nnbbSR','eebbSR','mmbbSR','nn0bSR','ee0bSR','mm0bSR','nnbbVBFSR','eebbVBFSR','mmbbVBFSR','nn0bVBFSR','ee0bVBFSR','mm0bVBFSR']:
+        for var in ['LeptonWeightUp','LeptonWeightDown','LeptonWeight']:
+            if 'Up' in var:
+                Integral_up = plot(var,cut)['BkgSum'].Integral()
+            elif 'Down' in var:
+                Integral_down = plot(var,cut)['BkgSum'].Integral()
             else:
-                if antiCorr:
-                    for x in range(1, hist[s].GetNbinsX()+1): hist[s].SetBinContent(x, hist[s].GetBinContent(x)+tmp.GetBinContent(tmp.GetNbinsX()+1-x))
-                else: hist[s].Add( tmp )
-            
-            if isShape:
-                tmp = file[ss].Get("Sys/"+sys+"_up")
-                print "Sys/"+sys+"_up"
-                if tmp == None: continue
-                if not s in histUp.keys(): histUp[s] = tmp
-                else: histUp[s].Add( tmp )
-                #
-                tmp = file[ss].Get("Sys/"+sys+"_down")
-                if tmp == None: continue
-                if not s in histDown.keys(): histDown[s] = tmp
-                else: histDown[s].Add( tmp )
-            
-        if 'accept' in sys:
-            norm = None
-            for j, ss in enumerate(sample[s]['files']):
-                tmp = file[ss].Get("Sys/PDF_scale")
-                if tmp == None: continue
-                if norm == None: norm = tmp
-                else: norm.Add( tmp )
-            hist[s].Divide(norm)
-        """
-        if(isShape):
-            shape = TF1("shape", "gaus", 0, 5000)
-            shapeUp = TF1("shapeUp", "gaus", 0, 5000)
-            shapeDown = TF1("shapeDown", "gaus", 0, 5000)
-            hist[s].Fit(shape, "Q0", "")
-            histUp[s].Fit(shapeUp, "Q0", "")
-            histDown[s].Fit(shapeDown, "Q0", "")
-            if 'scale' in sys or 'unc' in sys:
-                up[s] = histUp[s].GetMean()/hist[s].GetMean()
-                down[s] = histDown[s].GetMean()/hist[s].GetMean()
-#                up[s] = shapeUp.GetParameter(1)/shape.GetParameter(1)
-#                down[s] = shapeDown.GetParameter(1)/shape.GetParameter(1)
-            elif 'res' in sys:
-                up[s] = histUp[s].GetRMS()/hist[s].GetRMS()
-                down[s] = histDown[s].GetRMS()/hist[s].GetRMS()
-#                up[s] = shapeUp.GetParameter(2)/shape.GetParameter(2)
-#                down[s] = shapeDown.GetParameter(2)/shape.GetParameter(2)
+                Integral = plot(var,cut)['BkgSum'].Integral()
+                syst_up = Integral_up/Integral-1.
+                syst_down = Integral/Integral_down-1.
+                syst_total = (syst_up+syst_down)/2
+                print "up syst for %s:" % cut,syst_up
+                print "down syst for %s:" % cut,syst_down
+                print "total syst for %s" % cut,syst_total
+                if 'ee' in cut:
+                    syst_elec.append('%s : %.3f' % (cut[:-2],syst_total))
+                    syst_muon.append('%s : %.3f' % (cut[:-2],0.000))
+                elif 'mm' in cut:
+                    syst_elec.append('%s : %.3f' % (cut[:-2],0.000))
+                    syst_muon.append('%s : %.3f' % (cut[:-2],syst_total))
+                else:
+                    syst_elec.append('%s : %.3f' % (cut[:-2],0.00))
+                    syst_muon.append('%s : %.3f' % (cut[:-2],0.00))
+        Integral = 0.
+        Integral_up = 0.
+        Integral_down = 0.
+        for var in ['TriggerWeightUp','TriggerWeightDown','TriggerWeight']:
+            if 'Up' in var:
+                Integral_up = plot(var,cut)['BkgSum'].Integral()
+            elif 'Down' in var:
+                Integral_down = plot(var,cut)['BkgSum'].Integral()
+            else:
+                Integral = plot(var,cut)['BkgSum'].Integral()
+                syst_up = Integral_up/Integral-1.
+                syst_down = Integral/Integral_down-1.
+                syst_total = (syst_up+syst_down)/2
+                print "up trig_syst for %s:" % cut,syst_up
+                print "down trig_syst for %s:" % cut,syst_down
+                print "total trig_syst for %s" % cut,syst_total
+                syst_trig.append('%s : %.3f' % (cut[:-2],syst_total))
+ 
+    print 'syst_trig = {',syst_trig,'}'
+    print 'syst_elec = {',syst_elec,'}'
+    print 'syst_muon = {',syst_muon,'}'
+
+
+def calc_jec():
+    sign_mean_up_list = []
+    sign_mean_down_list = []
+    sign_sigma_up_list = []
+    sign_sigma_down_list = []
+    sign_mean_list = []
+    sign_sigma_list = []
+    for cut in ['nnbbSR_nocut','eebbSR_nocut','nnbbVBFSR_nocut','eebbVBFSR_nocut']:
+        if 'VBF' in cut:
+            sign_list = sign_VBF
         else:
-            up[s] = hist[s].GetBinContent(hist[s].FindBin(+1))/hist[s].GetBinContent(hist[s].FindBin(0))
-            down[s] = hist[s].GetBinContent(hist[s].FindBin(-1))/hist[s].GetBinContent(hist[s].FindBin(0))
-        gUp.SetPoint(i, m, up[s])
-        gDown.SetPoint(i, m, down[s])
-        #if mass < 1000: continue
-        upAvg += up[s]
-        downAvg += down[s]
-        if abs(up[s]) > upMax: upMax = abs(up[s])
-        if abs(up[s]) < upMin: upMin = abs(up[s])
-        if abs(down[s]) > downMax: downMax = abs(down[s])
-        if abs(down[s]) < downMin: downMin = abs(down[s])
+            sign_list = sign
+        if 'nn' in cut: 
+            var_list = ['X_mass_MET_jesUp','X_mass_MET_jesDown','X_mass_MET_jerUp','X_mass_MET_jerDown','X_mass_MET_nom']
+        else:
+            var_list = ['X_mass_jesUp','X_mass_jesDown','X_mass_jerUp','X_mass_jerDown','X_mass_nom']
+        for var in var_list:
+            if 'jesUp' in var:
+                vv_mean_up = plot(var,cut)['VV'].GetMean()
+                for signal in sign_list:
+                    sign_mean_up_list.append(plot(var,cut)[signal].GetMean())
+            elif 'jesDown' in var:
+                vv_mean_down = plot(var,cut)['VV'].GetMean()
+                for signal in sign_list:
+                    sign_mean_down_list.append(plot(var,cut)[signal].GetMean())
+            elif 'jerUp' in var:
+                vv_sigma_up = plot(var,cut)['VV'].GetRMS()
+                for signal in sign_list:
+                    sign_sigma_up_list.append(plot(var,cut)[signal].GetRMS())
+            elif 'jerDown' in var:
+                vv_sigma_down = plot(var,cut)['VV'].GetRMS()
+                for signal in sign_list:
+                    sign_sigma_down_list.append(plot(var,cut)[signal].GetRMS())
+            elif 'nom' in var:
+                vv_mean= plot(var,cut)['VV'].GetMean()
+                vv_sigma = plot(var,cut)['VV'].GetRMS()
+                for signal in sign_list:
+                    sign_mean_list.append(plot(var,cut)[signal].GetMean())
+                    sign_sigma_list.append(plot(var,cut)[signal].GetRMS())
+        print '%s VV jes: %.3f,%.3f'% (cut,vv_mean_down/vv_mean,vv_mean_up/vv_mean)
+        print '%s VV jer: %.3f,%.3f'% (cut,vv_sigma_down/vv_sigma,vv_sigma_up/vv_sigma)
+        print '%s Signal jes:'%cut
+        for i in range(len(sign_list)):
+            print "%s : [%.3f, %.3f]," %(sign_list[i][5:],sign_mean_down_list[i]/sign_mean_list[i],sign_mean_up_list[i]/sign_mean_list[i])
+        print '%s Signal jer:'%cut
+        for i in range(len(sign_list)):
+            print "%s : [%.3f, %.3f]," %(sign_list[i][5:],sign_sigma_down_list[i]/sign_sigma_list[i],sign_sigma_up_list[i]/sign_sigma_list[i])
     
-    upAvg /= len(sign)
-    downAvg /= len(sign)
+        
 
-    print " ---", sys, "--- | up: %.3f, down: %.3f, average: %.3f" % (upAvg, downAvg, abs(upAvg -1 + 1.-downAvg)/2.), "|", "^{%.1f-%.1f}_{%.1f-%.1f}" % (100.*(1.-upMin), 100.*(1.-upMax), 100.*(downMin-1.), 100.*(downMax-1.))
+def calc_jmc():
+    sign_mean_up_list = []
+    sign_mean_down_list = []
+    sign_sigma_up_list = []
+    sign_sigma_down_list = []
+    sign_mean_list = []
+    sign_sigma_list = []
+    for cut in ['nnbbSR_nocut','eebbSR_nocut','nnbbVBFSR_nocut','eebbVBFSR_nocut']:
+        if 'VBF' in cut:
+            sign_list = sign_VBF
+        else:
+            sign_list = sign
+        for var in ['H_mass_jmsUp','H_mass_jmsDown','H_mass_jmrUp','H_mass_jmrDown','H_mass_nom']:
+            if var=='H_mass_jmsUp':
+                vv_mean_up = plot(var,cut)['VV'].GetMean()
+                for signal in sign_list:
+                    sign_mean_up_list.append(plot(var,cut)[signal].GetMean())
+            elif var=='H_mass_jmsDown':
+                vv_mean_down = plot(var,cut)['VV'].GetMean()
+                for signal in sign_list:
+                    sign_mean_down_list.append(plot(var,cut)[signal].GetMean())
+            elif var=='H_mass_jmrUp':
+                vv_sigma_up = plot(var,cut)['VV'].GetRMS()
+                for signal in sign_list:
+                    sign_sigma_up_list.append(plot(var,cut)[signal].GetRMS())
+            elif var=='H_mass_jmrDown':
+                vv_sigma_down = plot(var,cut)['VV'].GetRMS()
+                for signal in sign_list:
+                    sign_sigma_down_list.append(plot(var,cut)[signal].GetRMS())
+            elif var=='H_mass_nom':
+                vv_mean= plot(var,cut)['VV'].GetMean()
+                vv_sigma = plot(var,cut)['VV'].GetRMS()
+                for signal in sign_list:
+                    sign_mean_list.append(plot(var,cut)[signal].GetMean())
+                    sign_sigma_list.append(plot(var,cut)[signal].GetRMS())
+        print '%s VV jms: %.3f,%.3f'% (cut,vv_mean_down/vv_mean,vv_mean_up/vv_mean)
+        print '%s VV jmr: %.3f,%.3f'% (cut,vv_sigma_down/vv_sigma,vv_sigma_up/vv_sigma)
+        print '%s Signal jms:'%cut
+        for i in range(len(sign_list)):
+            print "%s : [%.3f, %.3f]," %(sign_list[i][5:],sign_mean_down_list[i]/sign_mean_list[i],sign_mean_up_list[i]/sign_mean_list[i])
+        print '%s Signal jmr:'%cut
+        for i in range(len(sign_list)):
+            print "%s : [%.3f, %.3f]," %(sign_list[i][5:],sign_sigma_down_list[i]/sign_sigma_list[i],sign_sigma_up_list[i]/sign_sigma_list[i])
+        
+
+def calc_effb():
+    for cut in ['nnbbSR','nn0bSR']:
+        Integral_up = []
+        Integral_down = []
+        Integral = []
+        for var in ['BTagAK8Weight_deep_up','BTagAK8Weight_deep_down','BTagAK8Weight_deep']:
+            hist = plot(var,cut)
+            if 'up' in var:
+                for signal in sign:
+                    Integral_up.append(hist[signal].Integral())
+            elif 'down' in var:
+                for signal in sign:
+                    Integral_down.append(hist[signal].Integral())
+            else:
+                for signal in sign:
+                    Integral.append(hist[signal].Integral())
+        print "Uncertainty for BTagAK8Weight_deep in channel %s" %cut
+        for i,value in enumerate(Integral):
+            print "%s : [%.3f, %.3f]," %(sign[i][5:],Integral_down[i]/Integral[i],Integral_up[i]/Integral[i])
+            
     
-    c1 = TCanvas("c1", "Signals", 800, 600)
-    c1.cd()
-    c1.GetPad(0).SetTicky(2)
-    
-    gUp.Draw("AL")
-    gDown.Draw("SAME, L")
-    gUp.GetYaxis().SetRangeUser(0.65, 1.35)
-    gUp.GetXaxis().SetTitle("m_{X} (GeV)")
-    gUp.GetYaxis().SetTitle("Uncertainty")
-    
-    leg = TLegend(0.5, 0.90-0.20, 0.9, 0.90)
-    leg.SetBorderSize(0)
-    leg.SetFillStyle(0) #1001
-    leg.SetFillColor(0)
-    leg.SetHeader(sys.replace('_', ' '))
-    leg.AddEntry(gUp, "+1 s. d. (%.1f%%)" % (100.*(upAvg-1.)), "l")
-    leg.AddEntry(gDown, " -1 s. d. (%.1f%%)" % (100.*(1.-downAvg)), "l")
-    leg.Draw()
-    
-    drawCMS(-1, "Simulation", False)
-    c1.Update()
-    
-    filename = sys
-    if sys.startswith('W_mass') or sys.startswith('Z_mass'): filename += "_" + sign[0][:3]
-#    c1.Print("plots/Systematics/"+filename+".png")
-#    c1.Print("plots/Systematics/"+filename+".pdf")
-    if not gROOT.IsBatch(): raw_input("Press Enter to continue...")
-    if 'doubleB' in sys or 'subjet' in sys or 'mass' in sys:
-        print sys + " = {",
-        for m in [800, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 2000, 2500, 3000, 3500, 4000, 4500]:
-            print "%d : [%.3f, %.3f], " % (m, gUp.Eval(m), gDown.Eval(m)), 
-        print "}"
-    if 'extr' in sys or 'tagging' in sys:
-        print sys + " = {",
-        for m in [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500]:
-            print "%d : [%.3f, %.3f], " % (m, gUp.Eval(m), gDown.Eval(m)), 
-        print "}"
-    if 'QCD_scale' in sys or 'PDF_scale' in sys:
-        print sys + " = {",
-        for m in range(800, 4500+1, 10):
-            print "%d : [%.3f, %.3f], " % (m, gUp.Eval(m), gDown.Eval(m)), 
-        print "}"
+    for cut in ['nnbbTR','nn0bTR']:
+        Integral_up = 0.
+        Integral_down = 0.
+        Integral = 0.
+        for var in ['BTagAK4Weight_deep_up','BTagAK4Weight_deep_down','BTagAK4Weight_deep']:
+            hist = plot(var,cut)
+            if 'up' in var:
+                Integral_up = hist['BkgSum'].Integral()
+            elif 'down' in var:
+                Integral_down = hist['BkgSum'].Integral()
+            else:
+                Integral = hist['BkgSum'].Integral()
+        print "Uncertainty for BTagAK4Weight_deep in channel %s" %cut
+        print " [%.3f, %.3f]," %(Integral_down/Integral,Integral_up/Integral)
     
 
-def systematicsBkg(sys, s):
-    file = {}
-    hist, tmp = None, None
-    for j, ss in enumerate(sample[s]['files']):
-        file[ss] = TFile(NTUPLEDIR + ss + ".root", "READ")
-        tmp = file[ss].Get("Sys/"+sys)
-        if tmp.GetBinContent(tmp.FindBin(+1)) < 1.e-6: continue
-        if hist == None: hist = tmp
-        else: hist.Add( tmp )
-    up = hist.GetBinContent(hist.FindBin(+1))/hist.GetBinContent(hist.FindBin(0))
-    down = hist.GetBinContent(hist.FindBin(-1))/hist.GetBinContent(hist.FindBin(0))
-    print " ---", sys, "--- | up: %.3f, down: %.3f, average: %.3f" % (up, down, abs(up -1 + 1.-down)/2.)
 
-#systematics("J_energy_scale")
-#systematics("J_energy_res")
-#systematics("H_mass_scale")
-#systematics("H_mass_res")
-#systematics("V_mass_scale")
-#systematics("V_mass_res")
-#systematics("W_mass_scale")
-#systematics("Z_mass_scale")
-#systematics("W_mass_res", antiCorr=True) ###
-#systematics("Z_mass_res", antiCorr=True) ###
-#systematics("H_subjet_notag")
-systematics("BTagAK4Weight_deep")
-#systematics("H_subjet_loose")
-#systematics("H_subjet_tight")
-#systematics("H_doubleB_notag")
-#systematics("H_doubleB_loose")
-#systematics("H_doubleB_tight")
-#systematics("BTagSF_veto")
-#systematics("V_tau21_extr_HP")
-#systematics("V_tau21_extr_LP")
-#systematics("H_tagging")
-#systematics("ElecT_eff")
-#systematics("Elec1_eff")
-#systematics("Elec2_eff")
-#systematics("MuonT_eff")
-#systematics("Muon1_eff")
-#systematics("Muon2_eff")
-#systematics("MuonTrkIso_eff")
-#systematics("Pileup")
-#systematics("PDF_scale")
-#systematics("PDF_accept")
-#systematics("QCD_scale")
-#systematics("X_mass_scale", True)
-#systematics("X_mass_res", True)
-#systematics("X_mass_unc", True)
-#systematicsBkg("PDF_scale", "ST")
-#systematicsBkg("PDF_accept", "ST")
-#systematicsBkg("QCD_scale", "ST")
-#systematicsBkg("PDF_scale", "VV")
-#systematicsBkg("PDF_accept", "VV")
-#systematicsBkg("QCD_scale", "VV")
+
+
+
+if options.syst: calc_syst()
+elif options.jec: calc_jec()
+elif options.jmc: calc_jmc()
+elif options.effb: calc_effb()
+

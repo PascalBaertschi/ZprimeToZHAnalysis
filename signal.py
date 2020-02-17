@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#/usr/bin/env python
 
 import os, sys, getopt, multiprocessing
 import copy, math, pickle
 from array import array
-
 from ROOT import gROOT, gSystem, gStyle, gRandom
 from ROOT import TMath, TFile, TChain, TTree, TCut, TH1F, TH2F, THStack, TGraph, TGaxis
 from ROOT import TStyle, TCanvas, TPad, TLegend, TLatex, TText, TColor
@@ -54,7 +53,7 @@ gStyle.SetPadRightMargin(0.05)
 gStyle.SetErrorX(0.)
 
 NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/"
-PLOTDIR     = "/work/pbaertsc/heavy_resonance/Analysis/plotsSignal/"
+PLOTDIR     = "/work/pbaertsc/heavy_resonance/ZprimeToZHAnalysis/plotsSignal/"
 CARDDIR     = "datacards/"
 WORKDIR     = "workspace/"
 RATIO       = 4
@@ -82,7 +81,8 @@ SIGMAX = 135.
 HIGMIN = 135.
 HIGMAX = 250.
 
-XBINMIN= 750.
+
+XBINMIN=750.
 XBINMAX= 6750.
 XBINS  = 120
 
@@ -98,8 +98,8 @@ def signal(channel, stype):
     # HVT model
     if stype.startswith('X'):
         signalType = 'HVT'
-        genPoints = [800, 1000, 1200, 1400, 1600, 1800, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000]
-        massPoints = [x for x in range(800, 6000+1, 100)]
+        genPoints = [800, 1000, 1200, 1400, 1600, 1800, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+        massPoints = [x for x in range(800, 5000+1, 100)]
         interPar = True
     else:
         print "Signal type", stype, "not recognized"
@@ -136,6 +136,7 @@ def signal(channel, stype):
     H_ntag  = RooRealVar( "H_ntag",           "",           -9.,     9.     )
     H_dbt   = RooRealVar( "H_dbt",            "",           -2.,     2.     )
     H_tau21 = RooRealVar( "H_tau21",          "",           -9.,     2.     )
+    H_eta = RooRealVar( "H_eta",              "",           -9.,     9.     )
     H_tau21_ddt = RooRealVar( "H_ddt",  "",           -9.,     2.     )
     MaxBTag = RooRealVar( "MaxBTag",          "",          -10.,     2.     )
     H_chf   = RooRealVar( "H_chf",            "",           -1.,     2.     )
@@ -166,7 +167,7 @@ def signal(channel, stype):
     variables.add(RooArgSet(DEta, DPhi, MaxBTag, MinDPhi, nTaus, Vpt))
     variables.add(RooArgSet(DeepCSV1, DeepCSV2,VH_deltaR, H_tau21_ddt))
     variables.add(RooArgSet(isZtoNN, isZtoEE, isZtoMM, isHtobb, isMaxBTag_loose, weight))
-    variables.add(RooArgSet(isVBF, Mu1_relIso, Mu2_relIso, H_chf, H_pt, V_pt))
+    variables.add(RooArgSet(isVBF, Mu1_relIso, Mu2_relIso, H_chf, H_pt, V_pt,H_eta))
     #X_mass.setRange("X_extended_range", X_mass.getMin(), X_mass.getMax())
     X_mass.setRange("X_reasonable_range", X_mass.getMin(), X_mass.getMax())
     X_mass.setRange("X_integration_range", Xmin, Xmax)
@@ -197,6 +198,8 @@ def signal(channel, stype):
     sslope1 = {}
     salpha2 = {}
     sslope2 = {}
+    a1 = {}
+    a2 = {}
     sbrwig = {}
     signal = {}
     signalExt = {}
@@ -211,30 +214,30 @@ def signal(channel, stype):
 
     # Signal shape uncertainties (common amongst all mass points)
     xmean_fit = RooRealVar("sig_p1_fit", "Variation of the resonance position with the fit uncertainty", 0.005, -1., 1.)
-    smean_fit = RooRealVar("CMS2016_sig_p1_fit", "Change of the resonance position with the fit uncertainty", 0., -10, 10)
+    smean_fit = RooRealVar("CMSRunII_sig_p1_fit", "Change of the resonance position with the fit uncertainty", 0., -10, 10)
     xmean_jes = RooRealVar("sig_p1_scale_jes", "Variation of the resonance position with the jet energy scale", 0.010, -1., 1.) #0.001
-    smean_jes = RooRealVar("CMS2016_sig_p1_jes", "Change of the resonance position with the jet energy scale", 0., -10, 10)
+    smean_jes = RooRealVar("CMSRunII_sig_p1_jes", "Change of the resonance position with the jet energy scale", 0., -10, 10)
     xmean_e = RooRealVar("sig_p1_scale_e", "Variation of the resonance position with the electron energy scale", 0.001, -1., 1.)
-    smean_e = RooRealVar("CMS2016_sig_p1_scale_e", "Change of the resonance position with the electron energy scale", 0., -10, 10)
+    smean_e = RooRealVar("CMSRunII_sig_p1_scale_e", "Change of the resonance position with the electron energy scale", 0., -10, 10)
     xmean_m = RooRealVar("sig_p1_scale_m", "Variation of the resonance position with the muon energy scale", 0.001, -1., 1.)
-    smean_m = RooRealVar("CMS2016_sig_p1_scale_m", "Change of the resonance position with the muon energy scale", 0., -10, 10)
+    smean_m = RooRealVar("CMSRunII_sig_p1_scale_m", "Change of the resonance position with the muon energy scale", 0., -10, 10)
 
     xsigma_fit = RooRealVar("sig_p2_fit", "Variation of the resonance width with the fit uncertainty", 0.02, -1., 1.)
-    ssigma_fit = RooRealVar("CMS2016_sig_p2_fit", "Change of the resonance width with the fit uncertainty", 0., -10, 10)
+    ssigma_fit = RooRealVar("CMSRunII_sig_p2_fit", "Change of the resonance width with the fit uncertainty", 0., -10, 10)
     xsigma_jes = RooRealVar("sig_p2_scale_jes", "Variation of the resonance width with the jet energy scale", 0.010, -1., 1.) #0.001
-    ssigma_jes = RooRealVar("CMS2016_sig_p2_jes", "Change of the resonance width with the jet energy scale", 0., -10, 10)
+    ssigma_jes = RooRealVar("CMSRunII_sig_p2_jes", "Change of the resonance width with the jet energy scale", 0., -10, 10)
     xsigma_jer = RooRealVar("sig_p2_scale_jer", "Variation of the resonance width with the jet energy resolution", 0.020, -1., 1.)
-    ssigma_jer = RooRealVar("CMS2016_sig_p2_jer", "Change of the resonance width with the jet energy resolution", 0., -10, 10)
+    ssigma_jer = RooRealVar("CMSRunII_sig_p2_jer", "Change of the resonance width with the jet energy resolution", 0., -10, 10)
     xsigma_e = RooRealVar("sig_p2_scale_e", "Variation of the resonance width with the electron energy scale", 0.001, -1., 1.)
-    ssigma_e = RooRealVar("CMS2016_sig_p2_scale_e", "Change of the resonance width with the electron energy scale", 0., -10, 10)
+    ssigma_e = RooRealVar("CMSRunII_sig_p2_scale_e", "Change of the resonance width with the electron energy scale", 0., -10, 10)
     xsigma_m = RooRealVar("sig_p2_scale_m", "Variation of the resonance width with the muon energy scale", 0.040, -1., 1.)
-    ssigma_m = RooRealVar("CMS2016_sig_p2_scale_m", "Change of the resonance width with the muon energy scale", 0., -10, 10)
+    ssigma_m = RooRealVar("CMSRunII_sig_p2_scale_m", "Change of the resonance width with the muon energy scale", 0., -10, 10)
     
     xalpha1_fit = RooRealVar("sig_p3_fit", "Variation of the resonance alpha with the fit uncertainty", 0.03, -1., 1.)
-    salpha1_fit = RooRealVar("CMS2016_sig_p3_fit", "Change of the resonance alpha with the fit uncertainty", 0., -10, 10)
+    salpha1_fit = RooRealVar("CMSRunII_sig_p3_fit", "Change of the resonance alpha with the fit uncertainty", 0., -10, 10)
     
     xslope1_fit = RooRealVar("sig_p4_fit", "Variation of the resonance slope with the fit uncertainty", 0.10, -1., 1.)
-    sslope1_fit = RooRealVar("CMS2016_sig_p4_fit", "Change of the resonance slope with the fit uncertainty", 0., -10, 10)
+    sslope1_fit = RooRealVar("CMSRunII_sig_p4_fit", "Change of the resonance slope with the fit uncertainty", 0., -10, 10)
 
     xmean_fit.setConstant(True)
     smean_fit.setConstant(True)
@@ -280,182 +283,97 @@ def signal(channel, stype):
         valpha1[m] = RooRealVar(signalName + "_valpha1", "Crystal Ball alpha", 1.,  0., 5.) # number of sigmas where the exp is attached to the gaussian core. >0 left, <0 right
         salpha1[m] = RooFormulaVar(signalName + "_alpha1", "@0*(1+@1*@2)", RooArgList(valpha1[m], xalpha1_fit, salpha1_fit))
 
-        vslope1[m] = RooRealVar(signalName + "_vslope1", "Crystal Ball slope", 10., 1., 200.) # slope of the power tail   #10 1 60
+        vslope1[m] = RooRealVar(signalName + "_vslope1", "Crystal Ball slope", 10., 1., 60.) # slope of the power tail   #10 1 60
         sslope1[m] = RooFormulaVar(signalName + "_slope1", "@0*(1+@1*@2)", RooArgList(vslope1[m], xslope1_fit, sslope1_fit))
 
         salpha2[m] = RooRealVar(signalName + "_alpha2", "Crystal Ball alpha", 2,  1., 5.) # number of sigmas where the exp is attached to the gaussian core. >0 left, <0 right
         sslope2[m] = RooRealVar(signalName + "_slope2", "Crystal Ball slope", 10, 1.e-1, 115.) # slope of the power tail
+        #define polynomial
+        #a1[m] = RooRealVar(signalName + "_a1", "par 1 for polynomial", m, 0.5*m, 2*m)
+        a1[m] = RooRealVar(signalName + "_a1", "par 1 for polynomial", 0.001*m, 0.0005*m, 0.01*m)
+        a2[m] = RooRealVar(signalName + "_a2", "par 2 for polynomial", 0.05, -1.,1.)
+        #if channel=='nnbbVBF' or channel=='nn0bVBF':
+        #    signal[m] = RooPolynomial(signalName,"m_{%s'} = %d GeV" % (stype[1], m) , X_mass, RooArgList(a1[m],a2[m]))
+        #else:
+        #    signal[m] = RooCBShape(signalName, "m_{%s'} = %d GeV" % (stype[1], m), X_mass, smean[m], ssigma[m], salpha1[m], sslope1[m]) # Signal name does not have the channel
         signal[m] = RooCBShape(signalName, "m_{%s'} = %d GeV" % (stype[1], m), X_mass, smean[m], ssigma[m], salpha1[m], sslope1[m]) # Signal name does not have the channel
-
         # extend the PDF with the yield to perform an extended likelihood fit
         signalYield[m] = RooRealVar(signalName+"_yield", "signalYield", 100, 0., 1.e6)
         signalNorm[m] = RooRealVar(signalName+"_norm", "signalNorm", 1., 0., 1.e6)
         signalXS[m] = RooRealVar(signalName+"_xs", "signalXS", 1., 0., 1.e6)
         signalExt[m] = RooExtendPdf(signalName+"_ext", "extended p.d.f", signal[m], signalYield[m])
-
-    
-        #if 'nn' in channel:
-        #    if m<1000.: valpha1[m].setConstant(True)
-        #    else: valpha1[m].setVal(0.5)
-        #    vmean[m].setVal(m*0.9)
-        #    vsigma[m].setVal(m*0.08)
-        #else:
-        #    vslope1[m].setMax(40.)
         
-        valpha1[m].setVal(1.0)
-        valpha1[m].setConstant(True)
+        vslope1[m].setMax(50.)
+        vslope1[m].setVal(20.)
+        #valpha1[m].setVal(1.0)
+        #valpha1[m].setConstant(True)
+        
         if 'bb' in channel and 'VBF' not in channel:
             if 'nn' in channel:
-                 if m==1000:
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-        if 'bb' in channel and 'VBF' in channel:
-            if 'nn' in channel:
-                vsigma[m].setVal(m*0.2)
-            elif 'ee' in channel:
-                if m!=1400:
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-            elif 'mm' in channel:
-                if m==3000:
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                elif m==6000:
-                    vmean[m].setVal(m*0.9)
-        if '0b' in channel and 'VBF' in channel:
-            if 'nn' in channel:
-                vsigma[m].setVal(m*0.2)
-            elif 'ee' in channel:
-                if m==800:
-                    vsigma[m].setVal(m*0.11)
-                else:
-                    vsigma[m].setVal(m*0.08)
-            elif 'mm' in channel:
-                if m==800:
-                    vsigma[m].setVal(m*0.1)
-                elif m==1400:
-                    vsigma[m].setVal(m*0.1)
-                elif m==2000 or m==2500:
-                    vmean[m].setVal(m*0.9)
-
-                
-        """
-        if 'bb' in channel and 'VBF' not in channel:
-            if 'nn' in channel:
-                if m<2000:
-                    valpha1[m].setVal(0.5)
-                if m>1800 and m<3000:
-                  valpha1[m].setVal(0.8)
-                elif m>5000:
-                    valpha1[m].setVal(0.5)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-            elif 'ee' in channel:
-                if m < 1800 and m!=1000:
-                    valpha1[m].setVal(0.6)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-            elif 'mm' in channel:
-                if m < 2000:
-                    valpha1[m].setVal(0.5)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                else:
-                    valpha1[m].setVal(0.8)
-        
+                valpha1[m].setVal(0.5)
         elif '0b' in channel and 'VBF' not in channel:
             if 'nn' in channel:
-                if m < 1200:
-                   valpha1[m].setVal(0.7) 
-                elif m<2500 and m>1000:
-                   valpha1[m].setVal(0.5) 
+                if m==800:
+                    valpha1[m].setVal(2.)
+                    vsigma[m].setVal(m*0.04)
             elif 'ee' in channel:
-                valpha1[m].setVal(0.6)
+                valpha1[m].setVal(0.8)
+                if m==800:
+                    #valpha1[m].setVal(1.2)
+                    valpha1[m].setVal(2.5)
+                    vslope1[m].setVal(50.)
             elif 'mm' in channel:
-                if m>1000:
-                    valpha1[m].setVal(0.6)
-                else: 
-                    valpha1[m].setVal(0.6)
+                if m==800:
+                    valpha1[m].setVal(2.)
+                    vsigma[m].setVal(m*0.03)
+                else:
                     vmean[m].setVal(m*0.9)
                     vsigma[m].setVal(m*0.08)
         elif 'bb' in channel and 'VBF' in channel:
             if 'nn' in channel:
-                #vsigma[m].setVal(m*0.2)
-                if m==1800:
-                    valpha1[m].setVal(0.9)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                elif m==2500:
-                    valpha1[m].setVal(0.4)
-                elif m>4500:
-                    valpha1[m].setVal(0.9)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                else:
-                    valpha1[m].setVal(0.8)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                
-            elif 'ee' in channel:
-                vmean[m].setVal(m*0.9)
+                if m!=1800:
+                    vmean[m].setVal(m*0.8)
                 vsigma[m].setVal(m*0.08)
-                if m<3000:
-                    valpha1[m].setVal(0.9)
-                elif m==3000:
-                    valpha1[m].setVal(0.3)
-                else:
-                    valpha1[m].setVal(0.4) 
+                valpha1[m].setMin(1.)
+            elif 'ee' in channel:
+                valpha1[m].setVal(0.7)
             elif 'mm' in channel:
-                if m==1200 or m==4500:
-                    valpha1[m].setVal(0.8)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-
+                if m==800:
+                    vslope1[m].setVal(50.)
+                valpha1[m].setVal(0.7)
         elif '0b' in channel and 'VBF' in channel:
             if 'nn' in channel:
-                if m==1800:
-                    valpha1[m].setVal(0.9)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                elif m==2000:
-                    valpha1[m].setVal(0.5)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                elif m==2500:
-                    valpha1[m].setVal(0.8)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                elif m==5000:
-                    valpha1[m].setVal(0.5)
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
+                valpha1[m].setVal(3.) 
+                vmean[m].setVal(m*0.8)
+                vsigma[m].setVal(m*0.08)
+                valpha1[m].setMin(1.)
             elif 'ee' in channel:
-                valpha1[m].setVal(0.5)
-                vmean[m].setVal(m*0.9)
-            elif 'mm' in channel: 
-                if m==2500 or m==5000:
-                    valpha1[m].setVal(0.4)
-                    vmean[m].setVal(m*0.6)
-                    vsigma[m].setVal(m*0.08)
-                elif m==4500:
-                    valpha1[m].setVal(0.5) 
-                    vmean[m].setVal(m*0.9)
-                    vsigma[m].setVal(m*0.08)
-                else:
-                    valpha1[m].setVal(0.7)
-                    vmean[m].setVal(m*0.5)
-                    vsigma[m].setVal(m*0.08)
-        """
+                if m<2500:
+                    valpha1[m].setVal(2.)
+                if m==800:
+                    vsigma[m].setVal(m*0.05)
+                elif m==1000:
+                    vsigma[m].setVal(m*0.03)
+                elif m>1000 and m<1800:
+                    vsigma[m].setVal(m*0.04)
+            elif 'mm' in channel:
+                if m<2000:
+                    valpha1[m].setVal(2.)
+                if m==1000 or m==1800:
+                    vsigma[m].setVal(m*0.03)
+                elif m==1200 or m==1600:
+                    vsigma[m].setVal(m*0.04)
+
             
         #if m < 1000: vsigma[m].setVal(m*0.06)
 
         # If it's not the proper channel, make it a gaussian
-        if ((nLept==1 and stype=='XZH') or (nLept!=1 and stype=='XWH')):
-            valpha1[m].setVal(5)
-            valpha1[m].setConstant(True)
-            vslope1[m].setConstant(True)
-            salpha2[m].setConstant(True)
-            sslope2[m].setConstant(True)
+        #if nLept==0 and 'VBF' in channel:
+        #    valpha1[m].setVal(5)
+        #    valpha1[m].setConstant(True)
+        #    vslope1[m].setConstant(True)
+        #    salpha2[m].setConstant(True)
+        #    sslope2[m].setConstant(True)
 
         
         # ---------- if there is no simulated signal, skip this mass point ----------
@@ -508,11 +426,18 @@ def signal(channel, stype):
             
             signalIntegral[m] = signalExt[m].createIntegral(massArg, RooFit.NormSet(massArg), RooFit.Range("X_integration_range"))
             boundaryFactor = signalIntegral[m].getVal()
-            if VERBOSE: print " - Fit normalization vs integral:", signalYield[m].getVal(), "/", boundaryFactor, "events"
-            signalNorm[m].setVal( boundaryFactor * signalYield[m].getVal() / signalXS[m].getVal()) # here normalize to sigma(X) x Br(X->VH) = 1 [fb]
+            if VERBOSE: 
+                print " - Fit normalization vs integral:", signalYield[m].getVal(), "/", boundaryFactor, "events"
+            if channel=='nnbb' and m==5000:
+                signalNorm[m].setVal(2.5)
+            elif channel=='nn0b' and m==5000:
+                signalNorm[m].setVal(6.7)
+            else:
+                signalNorm[m].setVal( boundaryFactor * signalYield[m].getVal() / signalXS[m].getVal()) # here normalize to sigma(X) x Br(X->VH) = 1 [fb]
             
             
-
+        a1[m].setConstant(True)
+        a2[m].setConstant(True)
         vmean[m].setConstant(True)
         vsigma[m].setConstant(True)
         valpha1[m].setConstant(True)
@@ -554,7 +479,7 @@ def signal(channel, stype):
     gnorm.SetMaximum(0)
     inorm = TGraphErrors()
     inorm.SetMarkerStyle(24)
-    fnorm = TF1("fnorm", "pol9", 700, 6000) #"pol5" if not channel=="XZHnnbb" else "pol6" #pol5*TMath::Floor(x-1800) + ([5]*x + [6]*x*x)*(1-TMath::Floor(x-1800))
+    fnorm = TF1("fnorm", "pol9", 800, 5000) #"pol5" if not channel=="XZHnnbb" else "pol6" #pol5*TMath::Floor(x-1800) + ([5]*x + [6]*x*x)*(1-TMath::Floor(x-1800))
     fnorm.SetLineColor(920)
     fnorm.SetLineStyle(7)
     fnorm.SetFillColor(2)
@@ -568,7 +493,7 @@ def signal(channel, stype):
     gmean.SetLineColor(cColor)
     imean = TGraphErrors()
     imean.SetMarkerStyle(24)
-    fmean = TF1("fmean", "pol1", 0, 6000)
+    fmean = TF1("fmean", "pol1", 0, 5000)
     fmean.SetLineColor(2)
     fmean.SetFillColor(2)
 
@@ -580,7 +505,7 @@ def signal(channel, stype):
     gsigma.SetLineColor(cColor)
     isigma = TGraphErrors()
     isigma.SetMarkerStyle(24)
-    fsigma = TF1("fsigma", "pol1", 0, 6000)
+    fsigma = TF1("fsigma", "pol1", 0, 5000)
     fsigma.SetLineColor(2)
     fsigma.SetFillColor(2)
 
@@ -592,7 +517,7 @@ def signal(channel, stype):
     galpha1.SetLineColor(cColor)
     ialpha1 = TGraphErrors()
     ialpha1.SetMarkerStyle(24)
-    falpha1 = TF1("falpha", "pol0", 0, 6000)
+    falpha1 = TF1("falpha", "pol0", 0, 5000)
     falpha1.SetLineColor(2)
     falpha1.SetFillColor(2)
 
@@ -604,7 +529,7 @@ def signal(channel, stype):
     gslope1.SetLineColor(cColor)
     islope1 = TGraphErrors()
     islope1.SetMarkerStyle(24)
-    fslope1 = TF1("fslope", "pol0", 0, 6000)
+    fslope1 = TF1("fslope", "pol0", 0, 5000)
     fslope1.SetLineColor(2)
     fslope1.SetFillColor(2)
 
@@ -616,7 +541,7 @@ def signal(channel, stype):
     galpha2.SetLineColor(cColor)
     ialpha2 = TGraphErrors()
     ialpha2.SetMarkerStyle(24)
-    falpha2 = TF1("falpha", "pol0", 0, 6000)
+    falpha2 = TF1("falpha", "pol0", 0, 5000)
     falpha2.SetLineColor(2)
     falpha2.SetFillColor(2)
 
@@ -628,7 +553,7 @@ def signal(channel, stype):
     gslope2.SetLineColor(cColor)
     islope2 = TGraphErrors()
     islope2.SetMarkerStyle(24)
-    fslope2 = TF1("fslope", "pol0", 0, 6000)
+    fslope2 = TF1("fslope", "pol0", 0, 5000)
     fslope2.SetLineColor(2)
     fslope2.SetFillColor(2)
 
@@ -667,7 +592,7 @@ def signal(channel, stype):
     galpha2.Fit(falpha2, "Q0", "SAME")
     gslope2.Fit(fslope2, "Q0", "SAME")
     #for m in [5000, 5500]: gnorm.SetPoint(gnorm.GetN(), m, gnorm.Eval(m, 0, "S"))
-    gnorm.Fit(fnorm, "Q", "SAME", 700, 6000)
+    gnorm.Fit(fnorm, "Q", "SAME", 700, 5000)
 
     for m in massPoints:
         signalName = "%s_M%d" % (stype, m)
@@ -782,7 +707,7 @@ def signal(channel, stype):
         getattr(w, "import")(signalXS[m], RooFit.Rename(signalXS[m].GetName()))
     w.writeToFile("%s%s.root" % (WORKDIR, stype+channel), True)
     print "Workspace", "%s%s.root" % (WORKDIR, stype+channel), "saved successfully"
-
+    sys.exit()
 
 def efficiency(stype, Zlep=True):
     genPoints = [800, 1000, 1200, 1400, 1600, 1800, 2000, 2500, 3000, 3500, 4000, 4500]
@@ -876,7 +801,7 @@ def efficiency(stype, Zlep=True):
     eff["sum"].GetYaxis().SetTitleSize(0.045)
     eff["sum"].GetYaxis().SetTitleOffset(1.1)
     eff["sum"].GetXaxis().SetTitleOffset(1.05)
-    eff["sum"].GetXaxis().SetRangeUser(750, 5000)
+    eff["sum"].GetXaxis().SetRangeUser(750, 5500)
     if stype=='XWH' or (stype=='XZH' and Zlep): line = drawLine(750, 2./3., 4500, 2./3.)
     drawCMS(-1,YEAR, "Simulation") #Preliminary
     drawAnalysis("ZH")
@@ -1043,7 +968,7 @@ def efficiencyAll():
         eff[first].GetYaxis().SetLabelSize(0.045)
         eff[first].GetYaxis().SetTitleOffset(1.1)
         eff[first].GetXaxis().SetTitleOffset(1.05)
-        eff[first].GetXaxis().SetRangeUser(750,6000)
+        eff[first].GetXaxis().SetRangeUser(750,5500)
         eff[first].GetYaxis().SetRangeUser(0., 0.4)
         drawCMS(-1,YEAR, "Simulation")
         """

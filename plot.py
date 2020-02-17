@@ -24,7 +24,7 @@ usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage)
 parser.add_option("-v", "--variable", action="store", type="string", dest="variable", default="")
 parser.add_option("-c", "--cut", action="store", type="string", dest="cut", default="")
-parser.add_option("-y", "--year",action="store", type="string", dest="year", default="2017")
+parser.add_option("-y", "--year",action="store", type="string", dest="year", default="combined")
 parser.add_option("-w", "--weighted",action="store_false", default=True, dest="weighted")
 parser.add_option("-n", "--norm", action="store_true", default=False, dest="norm")
 parser.add_option("-s", "--syst", action="store_true", default=False, dest="syst")
@@ -54,7 +54,7 @@ if year in ['2016','2017','2018']:
     NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/Ntuples%s/"%(year)
 else:
     NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/"
-OUTPUTDIR = "/work/pbaertsc/heavy_resonance/Analysis/plots_%s/"%(year)
+OUTPUTDIR = "/work/pbaertsc/heavy_resonance/ZprimeToZHAnalysis/plots_%s/"%(year)
 
 SIGNAL      = 1 # Signal magnification factor
 RATIO       = 4 # 0: No ratio plot; !=0: ratio between the top and bottom pads
@@ -76,30 +76,31 @@ elif year=='combined':
 ########## SAMPLES ##########
 data = ['data_obs']
 back = ["VV", "ST", "TTbarSL", "WJetsToLNu_HT", "DYJetsToNuNu_HT", "DYJetsToLL_HT"] 
-#sign = ['XZH_M800','XZH_M1000','XZH_M1200','XZH_M1400','XZH_M1600', 'XZH_M1800', 'XZH_M2000', 'XZH_M2500','XZH_M3000','XZH_M3500', 'XZH_M4000','XZH_M4500','XZH_M5000']
-sign = ['XZH_M1000','XZH_M2000','XZH_M3000']
-#sign = []
+#sign_list = ['XZH_M800','XZH_M1000','XZH_M1200','XZH_M1400','XZH_M1600', 'XZH_M1800', 'XZH_M2000', 'XZH_M2500','XZH_M3000','XZH_M3500', 'XZH_M4000','XZH_M4500','XZH_M5000']
+sign_list = ['XZH_M1000','XZH_M2000','XZH_M3000']
+sign_VBF_list = ['XZHVBF_M1000','XZHVBF_M2000','XZHVBF_M3000']
+#sign_VBF_list = ['XZHVBF_M800','XZHVBF_M1000','XZHVBF_M1200','XZHVBF_M1400','XZHVBF_M1600','XZHVBF_M1800','XZHVBF_M2000','XZHVBF_M2500','XZHVBF_M3000','XZHVBF_3500','XZHVBF_M4000','XZHVBF_M4500','XZHVBF_M5000']
+#sign_list = []
 #
 ########## ######## ##########
 
-
 topSF = {
-    'nnbb'  : [1.217, 0.073],
-    'embb'  : [1.157, 0.041],
-    'nn0b'  : [1.195, 0.032],
-    'em0b'  : [0.963, 0.009],
-    'nnbbVBF'  : [1.217, 0.073],
-    'embbVBF'  : [1.157, 0.041],
-    'nn0bVBF'  : [1.195, 0.032],
-    'em0bVBF'  : [0.963, 0.009],
-    'eebb'  : [1.157, 0.041],
-    'mmbb'  : [1.157, 0.041],
-    'ee0b'  : [0.963, 0.009],
-    'mm0b'  : [0.963, 0.009],
-    'eebbVBF'  : [1.157, 0.041],
-    'mmbbVBF'  : [1.157, 0.041],
-    'ee0bVBF'  : [0.963, 0.009],
-    'mm0bVBF'  : [0.963, 0.009]
+    'nnbb'  : [1.102, 0.065],
+    'embb'  : [1.004, 0.036],
+    'nn0b'  : [1.230, 0.031],
+    'em0b'  : [0.982, 0.009],
+    'nnbbVBF'  : [1.102, 0.065],
+    'embbVBF'  : [1.004, 0.036],
+    'nn0bVBF'  : [1.230, 0.031],
+    'em0bVBF'  : [0.982, 0.009],
+    'eebb'  : [1.004, 0.036],
+    'mmbb'  : [1.004, 0.036],
+    'ee0b'  : [0.982, 0.009],
+    'mm0b'  : [0.982, 0.009],
+    'eebbVBF'  : [1.004, 0.036],
+    'mmbbVBF'  : [1.004, 0.036],
+    'ee0bVBF'  : [0.982, 0.009],
+    'mm0bVBF'  : [0.982, 0.009]
 }
 
 
@@ -112,18 +113,17 @@ def plot(var, cut, norm=False, nm1=False):
     treeRead = not 'cutflow' in var
     #treeRead = False
     channel = cut
-    BTagAK4deepup = False
-    BTagAK4deepdown = False
-    BTagAK4deep = False
-    BTagAK8deepup = False
-    BTagAK8deepdown = False
-    BTagAK8deep = False
+    TopBTagAK4deep = False
     TopBTagAK4deepup = False
     TopBTagAK4deepdown = False
     if 'inc' in cut:
         eventWeightLuminame = 'eventWeightLumi_nobtag'
     else:
         eventWeightLuminame = 'eventWeightLumi'
+    if 'VBF' in cut:
+        sign = sign_VBF_list
+    else:
+        sign = sign_list
     if "SB" in cut or "SR" in cut:
         channel_name = cut[:-2]
     else:
@@ -141,14 +141,18 @@ def plot(var, cut, norm=False, nm1=False):
     if "cutflow" in var:
         showSignal = False
     stype = "HVT model B"
-    if channel.endswith('up'):
+    if channel.endswith('TR'):
+        TopBTagAK4deep = True
+        cut = channel
+    elif channel.endswith('up'):
         TopBTagAK4deepup = True
         channel = channel[:-2]
         cut = channel
-    if channel.endswith('down'):
+    elif channel.endswith('down'):
         TopBTagAK4deepdown = True
         channel = channel[:-4]
         cut = channel
+    
     if treeRead:
         for k in sorted(selection.keys(), key=len, reverse=True):
             if k in cut: cut = cut.replace(k, selection[k])
@@ -156,30 +160,11 @@ def plot(var, cut, norm=False, nm1=False):
     # Determine Primary Dataset
     pd = []
     if any(w in cut for w in ['mn', 'mm', 'isZtoMM', 'isWtoMN']): pd += [x for x in sample['data_obs']['files'] if 'SingleMuon' in x]
-    if any(w in cut for w in ['en', 'ee', 'isWtoEN', 'isZtoEE', 'emqq', 'isTtoEM']): pd += [x for x in sample['data_obs']['files'] if ('SingleElectron' in x or 'EGamma' in x or 'SinglePhoton' in x)]
+    if any(w in cut for w in ['en', 'ee', 'isWtoEN', 'isZtoEE', 'emqq', 'isTtoEM']): pd += [x for x in sample['data_obs']['files'] if ('SingleElectron' in x or 'EGamma' in x)]
     if any(w in cut for w in ['nn', 'isZtoNN']): pd += [x for x in sample['data_obs']['files'] if 'MET' in x]
     if len(pd)==0: raw_input("Warning: Primary Dataset not recognized, continue?")
     if var == "PrefireWeight":
         pd = []
-
-    if var=='BTagAK4Weight_deep_up':
-        var = 'X_mass'
-        BTagAK4deepup = True
-    elif var=='BTagAK4Weight_deep_down':
-        var = 'X_mass'
-        BTagAK4deepdown = True
-    elif var=='BTagAK4Weight_deep':
-        var = 'X_mass'
-        BTagAK4deep = True
-    elif var=='BTagAK8Weight_deep_up':
-        var = 'X_mass'
-        BTagAK8deepup = True
-    elif var=='BTagAK8Weight_deep_down':
-        var = 'X_mass'
-        BTagAK8deepdown = True
-    elif var=='BTagAK8Weight_deep':
-        var = 'X_mass'
-        BTagAK8deep = True   
 
     print "Plotting from", ("tree" if treeRead else "file"), var, "in", channel, "channel with:"
     print "  dataset:", pd
@@ -212,26 +197,13 @@ def plot(var, cut, norm=False, nm1=False):
                 hist[s] = TH1F(s, ";"+title+";Events;"+('log' if variable[var]['log'] else ''), variable[var]['nbins'], min_value, max_value)
             else: hist[s] = TH1F(s, ";"+variable[var]['title'], len(variable[var]['bins'])-1, array('f', variable[var]['bins']))
             hist[s].Sumw2()
-            cutstring = "%s" % eventWeightLuminame + ("*("+cut+")") 
-            if var=='LeptonWeightUp':
-                cutstring = "(%s * LeptonWeightUp/LeptonWeight)" % eventWeightLuminame  + ("*("+cut+")") 
-            elif var=='LeptonWeightDown':
-                cutstring = "(%s * LeptonWeightDown/LeptonWeight)" % eventWeightLuminame  + ("*("+cut+")") 
-            elif var=='TriggerWeightUp':
-                cutstring = "(%s * TriggerWeightUp/TriggerWeight)" % eventWeightLuminame + ("*("+cut+")") 
-            elif var=='TriggerWeightDown':
-                cutstring = "(%s * TriggerWeightDown/TriggerWeight)" % eventWeightLuminame  + ("*("+cut+")") 
-            #division by BTagAk4Weight_deep is because the weighted samples are used
-            elif BTagAK4deepup or TopBTagAK4deepup:
-                cutstring = "(%s * BTagAK4Weight_deep_up/BTagAK4Weight_deep)" % eventWeightLuminame + ("*("+cut+")") 
-            elif BTagAK4deepdown or TopBTagAK4deepdown:
-                cutstring = "(%s * BTagAK4Weight_deep_down/BTagAK4Weight_deep)" % eventWeightLuminame + ("*("+cut+")") 
-            elif BTagAK8deep:
-                cutstring = "(%s * BTagAK8Weight_deep)" % eventWeightLuminame + ("*("+cut+")")    
-            elif BTagAK8deepup:
-                cutstring = "(%s * BTagAK8Weight_deep_up)" % eventWeightLuminame  + ("*("+cut+")") 
-            elif BTagAK8deepdown:
-                cutstring = "(%s * BTagAK8Weight_deep_down)" % eventWeightLuminame  + ("*("+cut+")")    
+            cutstring = "%s" % eventWeightLuminame + ("*("+cut+")")
+            if TopBTagAK4deep:
+                cutstring = "(%s * BTagAK4Weight_deep)" % eventWeightLuminame + ("*("+cut+")")
+            elif TopBTagAK4deepup:
+                cutstring = "(%s * BTagAK4Weight_deep_up)" % eventWeightLuminame + ("*("+cut+")") 
+            elif TopBTagAK4deepdown:
+                cutstring = "(%s * BTagAK4Weight_deep_down)" % eventWeightLuminame + ("*("+cut+")") 
             tree[s].Project(s, var, cutstring)
             if not tree[s].GetTree()==None: hist[s].SetOption("%s" % tree[s].GetTree().GetEntriesFast())
             #print tree[s].GetTree().GetEntriesFast()
@@ -295,14 +267,6 @@ def plot(var, cut, norm=False, nm1=False):
     # Create stack
     bkg = THStack("Bkg", ";"+hist['BkgSum'].GetXaxis().GetTitle()+";Events")
     for i, s in enumerate(back): bkg.Add(hist[s])
-    
-
-    if var in ['LeptonWeight','LeptonWeightUp','LeptonWeightDown','TriggerWeight','TriggerWeightUp','TriggerWeightDown']:
-        return hist['BkgSum'].Integral()
-    if channel.endswith('TR') and (BTagAK4deep or BTagAK4deepup or BTagAK4deepdown or BTagAK8deep or BTagAK8deepup or BTagAK8deepdown):
-        return hist['BkgSum']
-    if BTagAK4deep or BTagAK4deepup or BTagAK4deepdown or BTagAK8deep or BTagAK8deepup or BTagAK8deepdown:
-        return hist
 
     
     # Legend
@@ -432,11 +396,6 @@ def plot(var, cut, norm=False, nm1=False):
                 if removeData:
                     hist['data_obs'].SetBinContent(i+1, -1)
                     res.SetBinContent(i+1, -1.e6)
-        if cut=="XVHqq":
-            for i, s in enumerate(data+back+['BkgSum']+sign): hist[s].GetXaxis().SetRangeUser(0, 10)
-            bkg.GetXaxis().SetRangeUser(0, 10)
-            err.GetXaxis().SetRangeUser(0, 10)
-            res.GetXaxis().SetRangeUser(0, 10)
         if True:
             bg, sn = 'TTbarSL', 'XVH_M2000'
             pres, mass, tag1, tag2 = -1, -1, -1, -1
@@ -798,99 +757,7 @@ def plotNorm(var, cut, isPropaganda=False):
 
 
 
-########## ######## ##########
-
-def calc_syst():
-    Integral = 0.
-    Integral_up = 0.
-    Integral_down = 0.
-    syst_trig = []
-    syst_elec = []
-    syst_muon = []
-    for cut in ['nnbbSR','eebbSR','mmbbSR','nn0bSR','ee0bSR','mm0bSR','nnbbVBFSR','eebbVBFSR','mmbbVBFSR','nn0bVBFSR','ee0bVBFSR','mm0bVBFSR']:
-        #for cut in ['eebbSR','ee0bSR','eebbVBFSR','ee0bVBFSR']:
-        #for cut in ['eebbSR']:
-        for var in ['LeptonWeightUp','LeptonWeightDown','LeptonWeight']:
-            if 'Up' in var:
-                Integral_up = plot(var,cut)
-            elif 'Down' in var:
-                Integral_down = plot(var,cut)
-            else:
-                Integral = plot(var,cut)
-                syst_up = Integral_up/Integral-1.
-                syst_down = Integral/Integral_down-1.
-                syst_total = (syst_up+syst_down)/2
-                print "up syst for %s:" % cut,syst_up
-                print "down syst for %s:" % cut,syst_down
-                print "total syst for %s" % cut,syst_total
-                if 'ee' in cut:
-                    syst_elec.append('%s : %.3f' % (cut[:-2],syst_total))
-                    syst_muon.append('%s : %.3f' % (cut[:-2],0.000))
-                elif 'mm' in cut:
-                    syst_elec.append('%s : %.3f' % (cut[:-2],0.000))
-                    syst_muon.append('%s : %.3f' % (cut[:-2],syst_total))
-                else:
-                    syst_elec.append('%s : %.3f' % (cut[:-2],0.00))
-                    syst_muon.append('%s : %.3f' % (cut[:-2],0.00))
-        Integral = 0.
-        Integral_up = 0.
-        Integral_down = 0.
-        for var in ['TriggerWeightUp','TriggerWeightDown','TriggerWeight']:
-            if 'Up' in var:
-                Integral_up = plot(var,cut)
-            elif 'Down' in var:
-                Integral_down = plot(var,cut)
-            else:
-                Integral = plot(var,cut)
-                syst_up = Integral_up/Integral-1.
-                syst_down = Integral/Integral_down-1.
-                syst_total = (syst_up+syst_down)/2
-                print "up trig_syst for %s:" % cut,syst_up
-                print "down trig_syst for %s:" % cut,syst_down
-                print "total trig_syst for %s" % cut,syst_total
-                syst_trig.append('%s : %.3f' % (cut[:-2],syst_total))
- 
-    print 'syst_trig = {',syst_trig,'}'
-    print 'syst_elec = {',syst_elec,'}'
-    print 'syst_muon = {',syst_muon,'}'
-
-
-def calc_effb():
-    for cut in ['nnbbSR','nn0bSR']:
-        Integral_up = []
-        Integral_down = []
-        Integral = []
-        for var in ['BTagAK8Weight_deep_up','BTagAK8Weight_deep_down','BTagAK8Weight_deep']:
-            hist = plot(var,cut)
-            if 'up' in var:
-                for signal in sign:
-                    Integral_up.append(hist[signal].Integral())
-            elif 'down' in var:
-                for signal in sign:
-                    Integral_down.append(hist[signal].Integral())
-            else:
-                for signal in sign:
-                    Integral.append(hist[signal].Integral())
-        print "Uncertainty for BTagAK8Weight_deep in channel %s" %cut
-        for i,value in enumerate(Integral):
-            print "%s : [%.3f, %.3f]," %(sign[i][5:],Integral_down[i]/Integral[i],Integral_up[i]/Integral[i])
-    
-    for cut in ['nnbbTR','nn0bTR']:
-        Integral_up = 0.
-        Integral_down = 0.
-        Integral = 0.
-        for var in ['BTagAK4Weight_deep_up','BTagAK4Weight_deep_down','BTagAK4Weight_deep']:
-            hist = plot(var,cut)
-            if 'up' in var:
-                Integral_up = hist.Integral()
-            elif 'down' in var:
-                Integral_down = hist.Integral()
-            else:
-                Integral = hist.Integral()
-        print "Uncertainty for BTagAK4Weight_deep in channel %s" %cut
-        print " [%.3f, %.3f]," %(Integral_down/Integral,Integral_up/Integral)
-
-
+########## ######## ##########  
 def plotTop():
     gROOT.SetBatch(True)
     #back.remove('QCD')
@@ -915,9 +782,9 @@ def plotTopError():
     SF = {}
     SF_up = {}
     SF_down = {}
-    syst_trig = { 'nnbb' : 0.000, 'eebb' : 0.06, 'mmbb' : 0.019, 'nn0b' : 0.000, 'ee0b' : 0.06, 'mm0b' : 0.016, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.06, 'mmbbVBF' : 0.016, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.06, 'mm0bVBF' : 0.017}
-    syst_elec = { 'nnbb' : 0.000, 'eebb' : 0.071, 'mmbb' : 0.000, 'nn0b' : 0.000, 'ee0b' : 0.087, 'mm0b' : 0.000, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.090, 'mmbbVBF' : 0.000, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.098, 'mm0bVBF' : 0.000}
-    syst_muon = { 'nnbb' : 0.000, 'eebb' : 0.000, 'mmbb' : 0.005, 'nn0b' : 0.000, 'ee0b' : 0.000, 'mm0b' : 0.005, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.000, 'mmbbVBF' : 0.006, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.000, 'mm0bVBF' : 0.006}
+    syst_trig = {'nnbb' : 0.000, 'eebb' : 0.004, 'mmbb' : 0.018, 'nn0b' : 0.000, 'ee0b' : 0.004, 'mm0b' : 0.016, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.005, 'mmbbVBF' : 0.016, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.005, 'mm0bVBF' : 0.018}
+    syst_elec = {'nnbb' : 0.000, 'eebb' : 0.067, 'mmbb' : 0.000, 'nn0b' : 0.000, 'ee0b' : 0.089, 'mm0b' : 0.000, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.096, 'mmbbVBF' : 0.000, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.099, 'mm0bVBF' : 0.000}
+    syst_muon = {'nnbb' : 0.000, 'eebb' : 0.000, 'mmbb' : 0.005, 'nn0b' : 0.000, 'ee0b' : 0.000, 'mm0b' : 0.005, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.000, 'mmbbVBF' : 0.006, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.000, 'mm0bVBF' : 0.006}
     for tcr in CR:
         for v in ['H_mass', 'X_mass','H_pt', 'nJets', 'MinDPhi']:
             SF[tcr] = plot(v, tcr+'TR')
@@ -1740,8 +1607,6 @@ elif options.tagger: plottagger()
 elif options.norm: plotNorm(options.variable, options.cut)
 elif options.top: plotTop()
 #elif options.top: plotTopError()
-#elif options.syst: calc_syst()
 elif options.checkcut: checkcut(options.variable,options.cut)
-elif options.syst: calc_effb()
 else: plot(options.variable, options.cut)
 

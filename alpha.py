@@ -9,8 +9,8 @@ from ROOT import TMath, TFile, TChain, TTree, TCut, TH1F, TH2F, THStack, TF1, TG
 from ROOT import TStyle, TCanvas, TPad, TLegend, TLatex, TText
 
 # Import PDF library and PDF diagonalizer
-gSystem.Load("./PDFs/HWWLVJRooPdfs_cxx.so")
-gSystem.Load("./PDFs/PdfDiagonalizer_cc.so")
+gSystem.Load("/work/pbaertsc/heavy_resonance/ZprimeToZHAnalysis/PDFs/HWWLVJRooPdfs_cxx.so")
+gSystem.Load("/work/pbaertsc/heavy_resonance/ZprimeToZHAnalysis/PDFs/PdfDiagonalizer_cc.so")
 
 from ROOT import RooFit, RooRealVar, RooDataHist, RooDataSet, RooAbsData, RooAbsReal, RooAbsPdf, RooPlot, RooBinning, RooCategory, RooSimultaneous, RooArgList, RooArgSet, RooWorkspace, RooMsgService
 from ROOT import RooFormulaVar, RooGenericPdf, RooGaussian, RooExponential, RooPolynomial, RooChebychev, RooBreitWigner, RooCBShape, RooExtendPdf, RooAddPdf, RooProdPdf, RooNumConvPdf, RooFFTConvPdf, RooLandau
@@ -54,11 +54,14 @@ EXTRAPOLATE = options.extrapolate
 SCAN        = options.scan
 DIJET       = options.dijet
 NTUPLEDIR   = "/work/pbaertsc/heavy_resonance/"
-PLOTDIR     = "/work/pbaertsc/heavy_resonance/Analysis/plotsAlpha/" if not EXTRAPOLATE else "plotsAlphaExt/"
+PLOTDIR     = "/work/pbaertsc/heavy_resonance/ZprimeToZHAnalysis/plotsAlpha/" if not EXTRAPOLATE else "plotsAlphaExt/"
 CARDDIR     = "datacards/"
 WORKDIR     = "workspace/"
 RATIO       = 4
 LUMI        = 137190.
+LUMI_2016   = 35920.
+LUMI_2017   = 41530.
+LUMI_2018   = 59740.
 BLIND       = True if not EXTRAPOLATE else False
 REGENERATE  = False
 PREFIX      = "CMSRunII_"
@@ -99,24 +102,23 @@ XTBINS  = 115
 
 # inclusive top SF
 topSF = {
-    'nnbb'  : [1.217, 0.073, 0.034],
-    'embb'  : [1.157, 0.041, 0.005],
-    'nn0b'  : [1.195, 0.032, 0.044],
-    'em0b'  : [0.963, 0.009, 0.003],
-    'nnbbVBF'  : [1.217, 0.073, 0.034],
-    'embbVBF'  : [1.157, 0.041, 0.005],
-    'nn0bVBF'  : [1.195, 0.032, 0.044],
-    'em0bVBF'  : [0.963, 0.009, 0.003],
-    'eebb'  : [1.157, 0.041, 0.071],
-    'mmbb'  : [1.157, 0.041, 0.133],
-    'ee0b'  : [0.963, 0.009, 0.087],
-    'mm0b'  : [0.963, 0.009, 0.148],
-    'eebbVBF'  : [1.157, 0.041, 0.071],
-    'mmbbVBF'  : [1.157, 0.041, 0.133],
-    'ee0bVBF'  : [0.963, 0.009, 0.087],
-    'mm0bVBF'  : [0.963, 0.009, 0.148]
+    'nnbb'  : [1.102, 0.065,0.032],
+    'embb'  : [1.004, 0.036, 0.004],
+    'nn0b'  : [1.230, 0.031, 0.046],
+    'em0b'  : [0.982, 0.009, 0.004],
+    'nnbbVBF'  : [1.102, 0.065, 0.032],
+    'embbVBF'  : [1.004, 0.036, 0.004],
+    'nn0bVBF'  : [1.230, 0.031, 0.046],
+    'em0bVBF'  : [0.982, 0.009, 0.004],
+    'eebb'  : [1.004, 0.036, 0.067],
+    'mmbb'  : [1.004, 0.036, 0.075],
+    'ee0b'  : [0.982, 0.009, 0.089],
+    'mm0b'  : [0.982, 0.009, 0.095],
+    'eebbVBF'  : [1.004, 0.036, 0.067],
+    'mmbbVBF'  : [1.004, 0.036, 0.075],
+    'ee0bVBF'  : [0.982, 0.009, 0.089],
+    'mm0bVBF'  : [0.982, 0.009, 0.095]
 }
-
 
 
 
@@ -124,17 +126,17 @@ vvSF = [1.000, 0.229]
 
 functions = {
     "nnbb" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2", "VV" : "ERFEXPGAUS2",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "eebb" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS",  "VV" : "ERFEXPGAUS2",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "mmbb" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2", "VV" : "ERFEXPGAUS2",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "eebb" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2",  "VV" : "ERFEXPGAUS2",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "mmbb" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2", "VV" : "EXPGAUS2",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
     "nn0b" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS3", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "ee0b" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "mm0b" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2", "VV" : "ERFEXPGAUS", "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "nnbbVBF" : {"Vjet" : "POL2", "VjetAlt" : "EXP", "Top" : "GAUS2", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "eebbVBF" : {"Vjet" : "EXP", "VjetAlt" : "POW", "Top" : "GAUS",  "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "mmbbVBF" : {"Vjet" : "POL2", "VjetAlt" : "EXP", "Top" : "GAUS", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "ee0b" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS", "VV" : "EXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "mm0b" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS", "VV" : "ERFEXPGAUS", "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "nnbbVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "eebbVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS",  "VV" : "EXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "mmbbVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS2", "VV" : "EXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
     "nn0bVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS3", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "ee0bVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS", "VV" : "ERFEXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
-    "mm0bVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS", "VV" : "ERFEXPGAUS", "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "ee0bVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "ERFEXPGAUS", "VV" : "EXPGAUS",  "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
+    "mm0bVBF" : {"Vjet" : "POL5", "VjetAlt" : "EXPGAUS", "Top" : "GAUS", "VV" : "EXPGAUS", "Shape" : "EXPN", "ShapeAlt" : "EXPTAIL"},
     }
 
 
@@ -187,6 +189,7 @@ def alpha(channel):
     H_ntag  = RooRealVar( "H_ntag",           "",           -9.,     9.     )
     H_dbt   = RooRealVar( "H_dbt",            "",           -2.,     2.     )
     H_tau21 = RooRealVar( "H_tau21",          "",           -9.,     2.     )
+    H_eta   = RooRealVar( "H_eta",            "",           -9.,     9.     )
     H_tau21_ddt = RooRealVar( "H_ddt",  "",           -9.,     2.     )
     H_chf   = RooRealVar( "H_chf",            "",           -1.,     2.     )
     MaxBTag = RooRealVar( "MaxBTag",          "",          -10.,     2.     )
@@ -219,7 +222,7 @@ def alpha(channel):
     variables.add(RooArgSet(DEta, DPhi, MaxBTag, MinDPhi, nTaus))
     variables.add(RooArgSet(DeepCSV1, DeepCSV2, DeepTagMD_ZHbbvsQCD, VH_deltaR, H_tau21_ddt))
     variables.add(RooArgSet(isZtoNN, isZtoEE, isZtoMM, isHtobb, isTtoEM, isMaxBTag_loose, weight))
-    variables.add(RooArgSet(isVBF, Mu1_relIso, Mu2_relIso, H_chf, H_pt, V_pt))
+    variables.add(RooArgSet(isVBF, Mu1_relIso, Mu2_relIso, H_chf, H_pt, V_pt,H_eta))
 
 
     # define binning
@@ -411,12 +414,16 @@ def alpha(channel):
     p1Vjet = RooRealVar("p1Vjet", "par 1 for power", 500., 10, 1000)
     powVjet = RooGenericPdf("powVjet", "power law", "pow(@0 + @2, @1)", RooArgList(J_mass, p0Vjet, p1Vjet))
     meanVjet    = RooRealVar("meanVjet","mean of the gaussian", 100., 0., 200.)
-    if (nLept == 0 or nElec ==2) and nBtag == 0:
-       meanVjet2    = RooRealVar("meanVjet2","mean of the gaussian", 100., 0., 200.)
-       sigmaVjet2   = RooRealVar("sigmaVjet2","sigma of the gaussian", 50., 20., 200.)
+    #if (nLept == 0 or nElec ==2) and nBtag == 0:
+    #   meanVjet2    = RooRealVar("meanVjet2","mean of the gaussian", 100., 0., 200.)
+    #   sigmaVjet2   = RooRealVar("sigmaVjet2","sigma of the gaussian", 50., 20., 200.)
     #elif nMuon == 2:
     #    meanVjet2    = RooRealVar("meanVjet2","mean of the gaussian", 100., 0., 200.)
     #    sigmaVjet2   = RooRealVar("sigmaVjet2","sigma of the gaussian", 50., 20., 150.)
+    #else:
+    if nLept==0 and VBF:
+        meanVjet2    = RooRealVar("meanVjet2","mean of the gaussian", 100., 0., 250.)
+        sigmaVjet2   = RooRealVar("sigmaVjet2","sigma of the gaussian", 50., 20., 250.)
     else:
         meanVjet2    = RooRealVar("meanVjet2","mean of the gaussian", 100., 0., 150.)
         sigmaVjet2   = RooRealVar("sigmaVjet2","sigma of the gaussian", 50., 20., 150.)
@@ -477,7 +484,7 @@ def alpha(channel):
     # Variables for Top
     # Error Function * Exponential to model the bulk
     constTop  = RooRealVar("constTop",  "slope of the exp", -0.045,   -0.1,   0.)
-    offsetTop = RooRealVar("offsetTop", "offset of the erf", 120.0,   20., 250.)#100 80 250
+    offsetTop = RooRealVar("offsetTop", "offset of the erf", 120.0,   20., 200.)#100 80 250
     widthTop  = RooRealVar("widthTop",  "width of the erf",  50.0,    1., 130.)#100
     gausTop   = RooGaussian("baseTop",  "gaus for Top jet mass", J_mass, offsetTop, widthTop)
     erfrTop   = RooErfExpPdf("baseTop", "error function for Top jet mass", J_mass, constTop, offsetTop, widthTop)
@@ -509,6 +516,11 @@ def alpha(channel):
         print "  ERROR! Pdf", functions[category]["Top"], "is not implemented for Top"
         exit()
 
+    meanZ.setConstant(True)
+    sigmaZ.setConstant(True)
+    #meanT.setConstant(True)
+    sigmaT.setConstant(True)
+
     # fit to secondary bkg in MC (whole range)
     frTop = TopMass.fitTo(setTop, RooFit.SumW2Error(True), RooFit.Range("h_reasonable_range"), RooFit.Strategy(2), RooFit.Minimizer("Minuit2"), RooFit.Save(1), RooFit.PrintLevel(-1))
     if VERBOSE: print "********** Fit result [JET MASS TOP] ***", category, "*"*40, "\n", frTop.Print(), "\n", "*"*80
@@ -523,9 +535,13 @@ def alpha(channel):
     #*******************************************************#
     # Variables for VV
     # Error function and exponential to model the bulk
-    constVV  = RooRealVar("constVV",  "slope of the exp",  -0.030, -0.1,   0.)
-    offsetVV = RooRealVar("offsetVV", "offset of the erf", 90.,     1., 300.)
-    widthVV  = RooRealVar("widthVV",  "width of the erf",  50.,     1., 150.)#120
+    if channel=='XZHnnbb':
+        widthVV  = RooRealVar("widthVV",  "width of the erf",  50.,     1., 120.)
+        constVV  = RooRealVar("constVV",  "slope of the exp",  -0.030, -0.3,   0.)
+    else:
+        constVV  = RooRealVar("constVV",  "slope of the exp",  -0.030, -0.1,   0.)
+        widthVV  = RooRealVar("widthVV",  "width of the erf",  50.,     1., 170.)
+    offsetVV = RooRealVar("offsetVV", "offset of the erf", 90.,     30., 300.)
     erfrVV   = RooErfExpPdf("baseVV", "error function for VV jet mass", J_mass, constVV, offsetVV, widthVV)
     expoVV   = RooExponential("baseVV", "error function for VV jet mass", J_mass, constVV)
     # gaussian for the W mass peak
@@ -544,17 +560,13 @@ def alpha(channel):
     fracVH    = RooRealVar("fracVH",   "fraction of gaussian wrt erfexp",  1.5e-2, 0.,   1.)
     gausVH    = RooGaussian("gausVH",  "gaus for H jet mass", J_mass, meanVH, sigmaVH)
 
-    
-    #if nMuon==2 and not VBF:
-    #    meanVZ.setConstant(True)
-    #    sigmaVZ.setConstant(False)
-    #else:
-    #    meanVZ.setConstant(True)
-    #    sigmaVZ.setConstant(True)
+   
     meanVZ.setConstant(True)
-    sigmaVZ.setConstant(True)
     meanVH.setConstant(True)
+    sigmaVZ.setConstant(True)
     sigmaVH.setConstant(True)
+    
+
     # Define VV model
     if functions[category]["VV"] == "ERFEXPGAUS": VVMass  = RooAddPdf("VVMass",   functions[category]["VV"], RooArgList(gausVZ, erfrVV), RooArgList(fracVZ))
     elif functions[category]["VV"] == "ERFEXPGAUS2": VVMass  = RooAddPdf("VVMass",   functions[category]["VV"], RooArgList(gausVH, gausVZ, erfrVV), RooArgList(fracVH, fracVZ))
@@ -764,7 +776,7 @@ def alpha(channel):
     
     # ====== CONTROL VALUE ======
     
-    sys.exit("Planned stop")
+    #sys.exit("Planned stop")
     #############################################################################
     #                           _____ _                                         #
     #                          / ____| |                                        #
@@ -800,8 +812,8 @@ def alpha(channel):
     for n in ["const2MainSB", "const2VjetSB", "const2VjetSR", "const2TopSB", "const2TopSR", "const2VVSB", "const2VVSR"]: par[n] = RooRealVar(n, "slope of the exp 2", -8.e-3,   -1.,     0.)
     for n in ["fracMainSB", "fracVjetSB", "fracVjetSR", "fracTopSB", "fracTopSR", "fracVVSB", "fracVVSR"]: par[n] = RooRealVar(n, "fraction",            5.e-2,    0.,     10.)
     # EXPN
-    for n in ["numMainSB", "numVjetSB", "numVjetSR", "numTopSB", "numTopSR", "numVVSB", "numVVSR"]: par[n] = RooRealVar(n, "term ~x of the expN",  -3.e-3,   -2.e-2, +1.e-4)#-1.e-2
-    for n in ["denMainSB", "denVjetSB", "denVjetSR", "denTopSB", "denTopSR", "denVVSB", "denVVSR"]: par[n] = RooRealVar(n, "term ~1/x of the expN",  -3.e+2,   -2.e+4, +1.e+5)#3.e+3,   -2.e+4, +1.e+5
+    for n in ["numMainSB", "numVjetSB", "numVjetSR", "numTopSB", "numTopSR", "numVVSB", "numVVSR"]: par[n] = RooRealVar(n, "term ~x of the expN",  -1.e-2,   -2.e-2, +1.e-4)#-1.e-2
+    for n in ["denMainSB", "denVjetSB", "denVjetSR", "denTopSB", "denTopSR", "denVVSB", "denVVSR"]: par[n] = RooRealVar(n, "term ~1/x of the expN",  3.e+3,   -2.e+4, +1.e+5)#3.e+3,   -2.e+4, +1.e+5
     # EXPTAIL
     for n in ["c0MainSB", "c0VjetSB", "c0VjetSR", "c0TopSB", "c0TopSR", "c0VVSB", "c0VVSR"]: par[n] = RooRealVar(n, "term ~x^0 of the pol1", 400., 40., 1.e4) #10., 0.1, 1.e4)
     for n in ["c1MainSB", "c1VjetSB", "c1VjetSR", "c1TopSB", "c1TopSR", "c1VVSB", "c1VVSR"]: par[n] = RooRealVar(n, "term ~x^1 of the pol1", 0.10, 0,  0.50)
@@ -818,269 +830,245 @@ def alpha(channel):
     if not EXTRAPOLATE:  
         if nBtag == 2 and not VBF:
             if nLept==0:
-                par["numVVSB"].setMin(-7.e-3)
-                par["numVVSB"].setVal(-4.e-3)
-                par["numVVSB"].setMax(-2.e-3)
-                par["denVjetSR"].setMin(1500)
-                par["denVjetSR"].setVal(2000)
-                par["denVjetSR"].setMax(5500)
-                par["denTopSB"].setMin(-3000)
-                par["denTopSB"].setVal(-1000)
-                par["denTopSB"].setMax(0)
+                par["numVVSR"].setMin(-7.e-3)
+                par["numVVSR"].setVal(-5.e-3)
+                par["numVVSR"].setMax(-3.e-3)
+                par["numVVSB"].setMin(-4.e-3)
+                par["numVVSB"].setVal(-3.e-3)
+                par["numVVSB"].setMax(-2.5e-3)
+                par["c1VjetSB"].setVal(2.7e-2)
+                par["c1VjetSR"].setVal(2.7e-2)
+                par["c1VjetSB"].setConstant(True)
+                par["c1VjetSR"].setConstant(True)
             elif nElec==2:
-                par["denVVSB"].setMin(-6000)
+                par["numVVSR"].setMin(-3.e-3)
+                par["numVVSR"].setVal(-2.e-3)
+                par["numVVSR"].setMax(-1.e-3)
+                par["denVVSB"].setMin(-8000)
                 par["denVVSB"].setVal(-2000)
-                par["denVVSB"].setMax(-1000)
-                par["denVjetSB"].setMin(500)
-                par["denVjetSB"].setVal(1400)
-                par["denVjetSB"].setMax(4000)#3000
-                par["denVjetSR"].setMin(200)
-                par["denVjetSR"].setVal(1500)
-                par["denVjetSR"].setMax(4000)
-                par["numVjetSR"].setMin(-5.e-3)
-                par["numVjetSR"].setVal(-4.e-3)
-                par["numVjetSR"].setMax(-3.7e-3)
-                #par["c0MainSB"].setMin(100)
-                #par["c0MainSB"].setVal(200)
-                #par["c0MainSB"].setMax(300)
-            elif nMuon==2:
-                par["c0MainSB"].setMin(100)
-                par["c0MainSB"].setVal(200)
-                par["c0MainSB"].setMax(300)
-                par["denVjetSR"].setMin(700)
-                par["denVjetSR"].setVal(1600)
-                par["denVjetSR"].setMax(3500)
-                par["denTopSB"].setMin(-5000)
-                par["denTopSB"].setVal(-2500)
-                par["denTopSB"].setMax(-500)
-                par["denVVSB"].setMin(0)
-                par["denVVSB"].setVal(500)
-                par["denVVSB"].setMax(2500)
-                par["denVVSR"].setMin(0)
-                par["denVVSR"].setVal(500)
-                par["denVVSR"].setMax(1200)
-        elif nBtag==0 and not VBF:
-            if nLept==0:
-                par["c0TopSR"].setMin(20)
-                par["c0TopSR"].setVal(40)
-                par["c0TopSR"].setMax(60)
-                par["denTopSR"].setMin(5000)
-                par["denTopSR"].setVal(7000)
-                par["denTopSR"].setMax(9000)
+                par["denVVSB"].setMax(0)
                 par["numTopSR"].setMin(-3.e-3)
                 par["numTopSR"].setVal(-2.e-3)
                 par["numTopSR"].setMax(-1.e-3)
-                par["denVVSB"].setMin(-1200)
-                par["denVVSB"].setVal(1000)
-                par["denVVSB"].setMax(2000)
-                par["numVVSB"].setMin(-5.e-3)
-                par["numVVSB"].setVal(-4.e-3)
-                par["numVVSB"].setMax(-3.e-3)
-            elif nElec==2:
-                par["denTopSR"].setMin(-6000)
-                par["denTopSR"].setVal(-3000)
-                par["denTopSR"].setMax(-1000)
-                par["denTopSB"].setMin(3300)
-                par["denTopSB"].setVal(5000)
-                par["denTopSB"].setMax(9000)
-                par["c0MainSB"].setMin(100)
-                par["c0MainSB"].setVal(200)
-                par["c0MainSB"].setMax(300)
-                #par["denVjetSR"].setMin(2000)
-                #par["denVjetSR"].setVal(4000)
-                #par["denVjetSR"].setMax(6000)#6000
-                #par["denVjetSB"].setMin(1000)
-                #par["denVjetSB"].setVal(2000)
-                #par["denVjetSB"].setMax(5000)
+                par["numVjetSR"].setMin(-5.5e-3)
+                par["numVjetSR"].setVal(-4.e-3)
+                par["numVjetSR"].setMax(-3.8e-3)
+                par["denVjetSR"].setMin(0)
+                par["denVjetSR"].setVal(1500)
+                par["denVjetSR"].setMax(6000)
+                par["denVjetSB"].setMin(-1000)
+                par["denVjetSB"].setVal(500)
+                par["denVjetSB"].setMax(5000)
+                par["c1VjetSB"].setVal(1.e-2)
+                par["c1VjetSR"].setVal(1.e-2)
+                par["c1VjetSB"].setConstant(True)
+                par["c1VjetSR"].setConstant(True)
             elif nMuon==2:
-                par["denTopSB"].setMin(-5000)
-                par["denTopSB"].setVal(-4000)
-                par["denTopSB"].setMax(-3000)
+                par["numVVSR"].setMin(-2.5e-3)
+                par["numVVSR"].setVal(-2.e-3)
+                par["numVVSR"].setMax(-1.3e-3)
+                par["denVjetSR"].setMin(0)
+                par["denVjetSR"].setVal(500)
+                par["denVjetSR"].setMax(5000)
+        elif nBtag==0 and not VBF:
+            if nLept==0:
+                par["denVVSR"].setMin(0)
+                par["denVVSR"].setVal(200)
+                par["denVVSR"].setMax(5000)
+                par["numVVSB"].setMin(-2.3e-3)
+                par["numVVSB"].setVal(-2.e-3)
+                par["numVVSB"].setMax(-1.4e-3)
+                par["numTopSR"].setMin(-1.8e-3)
+                par["numTopSR"].setVal(-1.5e-3)
+                par["numTopSR"].setMax(-9.e-4)
+                par["numTopSB"].setMin(-6.e-3)
+                par["numTopSB"].setVal(-2.e-3)
+                par["numTopSB"].setMax(-1.e-3)
+                par["denVjetSR"].setMin(0)
+                par["denVjetSR"].setVal(4000)
+                par["denVjetSR"].setMax(9000)
+            elif nElec==2:
+                par["numVVSR"].setMin(-3.e-3)
+                par["numVVSR"].setVal(-2.e-3)
+                par["numVVSR"].setMax(-1.e-3)
+                par["denTopSR"].setMin(0)
+                par["denTopSR"].setVal(500)
+                par["denTopSR"].setMax(4000)
+                par["denTopSB"].setMin(0)
+                par["denTopSB"].setVal(5000)
+                par["denTopSB"].setMax(7000)
+                par["denVjetSR"].setMin(0)
+                par["denVjetSR"].setVal(4000)
+                par["denVjetSR"].setMax(9000)
+                par["denVjetSB"].setMin(0)
+                par["denVjetSB"].setVal(2000)
+                par["denVjetSB"].setMax(6000)
+            elif nMuon==2:
+                par["numVVSR"].setMin(-3.e-3)
+                par["numVVSR"].setVal(-2.5e-3)
+                par["numVVSR"].setMax(-2.e-3)
+                par["denTopSR"].setMin(2000)
+                par["denTopSR"].setVal(4000)
+                par["denTopSR"].setMax(6000)
                 par["c0MainSB"].setMin(20)
                 par["c0MainSB"].setVal(60)
                 par["c0MainSB"].setMax(260)
-                par["denVjetSR"].setMin(2500)
-                par["denVjetSR"].setVal(4000)
+                par["numVjetSR"].setMin(-4.e-3)
+                par["numVjetSR"].setVal(-3.e-3)
+                par["numVjetSR"].setMax(-2.7e-3)
+                par["denVjetSR"].setMin(0)
+                par["denVjetSR"].setVal(3000)
                 par["denVjetSR"].setMax(5000)
+                par["denVjetSB"].setMin(0)
+                par["denVjetSB"].setVal(1500)
+                par["denVjetSB"].setMax(5000)
         elif nBtag == 2 and VBF:
             if nLept==0:
-                #par["c0MainSB"].setMin(70)#50
-                #par["c0MainSB"].setVal(100)
-                #par["c0MainSB"].setMax(140)
-                par["denVjetSB"].setMin(0)
-                par["denVjetSB"].setVal(2100)
-                par["denVjetSB"].setMax(6000)
-                par["denVjetSR"].setMin(0)
-                par["denVjetSR"].setVal(2100)
+                par["denVVSB"].setMin(0)
+                par["denVVSB"].setVal(500)
+                par["denVVSB"].setMax(6000)
+                par["numVVSB"].setMin(-3.3e-3)
+                par["numVVSB"].setVal(-3.e-3)
+                par["numVVSB"].setMax(-2.4e-3)
+                par["denTopSR"].setMin(0)
+                par["denTopSR"].setVal(1000)
+                par["denTopSR"].setMax(4000)
+                par["numTopSR"].setMin(-8.e-3)
+                par["numTopSR"].setVal(-6.e-3)
+                par["numTopSR"].setMax(-5.e-3)
+                par["denTopSB"].setMin(0)
+                par["denTopSB"].setVal(300)
+                par["denTopSB"].setMax(5000)
+                par["numTopSB"].setMin(-8.e-3)
+                par["numTopSB"].setVal(-6.5e-3)
+                par["numTopSB"].setMax(-5.e-3)
+                par["c0MainSB"].setMin(60)
+                par["c0MainSB"].setVal(130)
+                par["c0MainSB"].setMax(460)
+                par["denVjetSR"].setMin(-3000)
+                par["denVjetSR"].setVal(200)
                 par["denVjetSR"].setMax(6000)
-                par["denTopSR"].setMin(1000)
-                par["denTopSR"].setVal(8800)
-                par["denTopSR"].setMax(9700)
-            elif nElec==2:
-                #par["c0MainSB"].setMin(150)
-                #par["c0MainSB"].setVal(200)
-                #par["c0MainSB"].setMax(350)
-                par["denTopSR"].setMin(6000)
-                par["denTopSR"].setVal(9000)
-                par["denTopSR"].setMax(11000)
-                par["denTopSB"].setMin(0)
-                par["denTopSB"].setVal(500)
-                par["denTopSB"].setMax(3000)
-                par["numTopSB"].setMin(-5.e-3)
-                par["numTopSB"].setVal(-4.e-3)
-                par["numTopSB"].setMax(-3.e-3)
-                par["denVVSR"].setMin(0)
-                par["denVVSR"].setVal(500)
-                par["denVVSR"].setMax(4000)
-                par["numVVSR"].setMin(-6.e-3)
-                par["numVVSR"].setVal(-5.e-3)
-                par["numVVSR"].setMax(-4.e-3)
-                par["denVVSB"].setMin(-1000)
-                par["denVVSB"].setVal(1000)
-                par["denVVSB"].setMax(3000)
-                par["numVVSB"].setMin(-4.e-3)
-                par["numVVSB"].setVal(-2.5e-3)
-                par["numVVSB"].setMax(-2.e-3)
-                par["denVjetSB"].setMin(-100)
-                par["denVjetSB"].setVal(600)
+                par["denVjetSB"].setMin(-3000)
+                par["denVjetSB"].setVal(200)
                 par["denVjetSB"].setMax(6000)
-                par["numVjetSB"].setMin(-4.e-3)
-                par["numVjetSB"].setVal(-3.5e-3)
-                par["numVjetSB"].setMax(-2.e-3)
-                par["denVjetSR"].setMin(-2000)#-1500
-                par["denVjetSR"].setVal(100)
-                par["denVjetSR"].setMax(6500)#5500
-            elif nMuon==2:
-                par["denTopSB"].setMin(0)
-                par["numTopSB"].setMin(-6.e-2)
-                par["numTopSB"].setVal(-5.e-3)
-                par["numTopSB"].setMax(-4.e-3)
-                par["numTopSR"].setMin(-6.e-3)
-                par["numTopSR"].setVal(-4.e-3)
-                par["numTopSR"].setMax(-1.e-3)
+            elif nElec==2:
                 par["denVVSR"].setMin(0)
                 par["denVVSR"].setVal(500)
-                par["denVVSR"].setMax(2000)
-                #par["denVjetSR"].setMin(0)
-                #par["denVjetSR"].setVal(500)
-                #par["denVjetSR"].setMax(1000)
-                #par["denVjetSB"].setMin(0)
-                #par["denVjetSB"].setVal(1300)
-                #par["denVjetSB"].setMax(3000)
-                #par["numVjetSR"].setMin(-4.e-3)
-                #par["numVjetSR"].setVal(-2.e-3)
-                #par["numVjetSR"].setMax(-1.e-3)
+                par["denVVSR"].setMax(5000)
+                par["numVVSR"].setMin(-3.e-3)
+                par["numVVSR"].setVal(-1.e-3)
+                par["numVVSR"].setMax(-9.e-4)
+                par["denVVSB"].setMin(0)
+                par["denVVSB"].setVal(1000)
+                par["denVVSB"].setMax(5000)
+                par["numVVSB"].setMin(-4.e-3)
+                par["numVVSB"].setVal(-3.e-3)
+                par["numVVSB"].setMax(-2.e-3)
+                par["denVjetSR"].setMin(0)
+                par["denVjetSR"].setVal(1500)
+                par["denVjetSR"].setMax(3000)
+                par["numVjetSR"].setMin(-2.3e-3)
+                par["numVjetSR"].setVal(-2.e-3)
+                par["numVjetSR"].setMax(-1.7e-3)
+                par["denVjetSB"].setMin(-4000)
+                par["denVjetSB"].setVal(600)
+                par["denVjetSB"].setMax(4000)
+            elif nMuon==2:
+                par["denVVSR"].setMin(4000)
+                par["denVVSR"].setVal(5000)
+                par["denVVSR"].setMax(9000)
+                par["numVVSR"].setMin(-3.e-3)
+                par["numVVSR"].setVal(-1.e-3)
+                par["numVVSR"].setMax(-3.e-4)
+                par["denVVSB"].setMin(0)
+                par["denVVSB"].setVal(1000)
+                par["denVVSB"].setMax(6000)
+                par["denTopSB"].setMin(-6000)
+                par["denTopSB"].setVal(-4000)
+                par["denTopSB"].setMax(-2000)
+                par["numTopSB"].setMin(-8.e-3)
+                par["numTopSB"].setVal(-7.e-3)
+                par["numTopSB"].setMax(-6.e-3)
+                par["denVjetSR"].setMin(-3000)
+                par["denVjetSR"].setVal(500)
+                par["denVjetSR"].setMax(3000)
+                par["denVjetSB"].setMin(-3000)
+                par["denVjetSB"].setVal(1300)
+                par["denVjetSB"].setMax(3000)
         elif nBtag==0 and VBF:
             if nLept==0:
-                par["c0MainSB"].setMin(20)
-                par["c0MainSB"].setVal(130)
-                par["c0MainSB"].setMax(200)
-                par["numVVSR"].setMin(-4.e-2)
-                par["numVVSR"].setVal(-3.e-3)
-                par["numVVSR"].setMax(-2.5e-3)
                 par["denVVSR"].setMin(0)
                 par["denVVSR"].setVal(500)
-                par["denVVSR"].setMax(1000)
-                par["denTopSR"].setMin(12000)
-                par["denTopSR"].setVal(13000)
-                par["denTopSR"].setMax(15000)
-                par["denTopSB"].setMin(3000)
-                par["denTopSB"].setVal(5000)
-                par["denTopSB"].setMax(8000)
-                par["numTopSB"].setMin(-6.e-3)
-                par["numTopSB"].setVal(-3.e-3)
-                par["numTopSB"].setMax(-2.e-3)
-                par["denVjetSR"].setMin(4000)
-                par["denVjetSR"].setVal(5000)
+                par["denVVSR"].setMax(9000)
+                par["numVVSR"].setMin(-5.e-3)
+                par["numVVSR"].setVal(-3.8e-3)
+                par["numVVSR"].setMax(-2.e-3)
+                par["denVVSB"].setMin(0)
+                par["denVVSB"].setVal(500)
+                par["denVVSB"].setMax(7000)
+                par["numVVSB"].setMin(-5.e-3)
+                par["numVVSB"].setVal(-4.e-3)
+                par["numVVSB"].setMax(-3.5e-3)
+                par["denTopSR"].setMin(-4000)
+                par["denTopSR"].setVal(1000)
+                par["denTopSR"].setMax(7000)
+                par["numTopSR"].setMin(-2.5e-3)
+                par["numTopSR"].setVal(-2.e-3)
+                par["numTopSR"].setMax(-1.5e-3)
+                par["denTopSB"].setMin(-7000)
+                par["denTopSB"].setVal(500)
+                par["denTopSB"].setMax(3000)
+                par["numTopSB"].setMin(-9.e-3)
+                par["numTopSB"].setVal(-7.e-3)
+                par["numTopSB"].setMax(-6.e-3)
+                par["c0VVSR"].setMin(0)
+                par["c0VVSR"].setVal(500)
+                par["c0VVSR"].setMax(3000)
+                par["denVjetSR"].setMin(2000)
+                par["denVjetSR"].setVal(3000)
                 par["denVjetSR"].setMax(7000)
-                par["denVjetSB"].setMin(2000)
-                par["denVjetSB"].setVal(3500)
+                par["denVjetSB"].setMin(1000)
+                par["denVjetSB"].setVal(3000)
                 par["denVjetSB"].setMax(5000)
             elif nElec==2:
-                par["numVjetSR"].setMin(-3.5e-3)
-                par["numVjetSR"].setVal(-2.5e-3)
-                par["numVjetSR"].setMax(-1.5e-3)
+                par["denTopSB"].setMin(0)
+                par["denTopSB"].setVal(2000)
+                par["denTopSB"].setMax(3000)
+                par["denTopSR"].setMin(0)
+                par["denTopSR"].setVal(500)
+                par["denTopSR"].setMax(2000)
                 par["denVjetSR"].setMin(-5000)
                 par["denVjetSR"].setVal(200)
                 par["denVjetSR"].setMax(5000)
-                par["denVjetSB"].setMin(700)
-                par["denVjetSB"].setVal(1600)
-                par["denVjetSB"].setMax(2800)
-    if EXTRAPOLATE:  
-        if nBtag == 2 and not VBF:
-            if nElec==2:
-                #only for extrapolate!
-                par["numVVSB"].setMin(-1.1e-2)
-                par["numVVSB"].setVal(-9.e-3)
-                par["numVVSB"].setMax(-2.e-3)
-                par["c0TopSR"].setMin(20)
-                par["c0TopSR"].setVal(40)
-                par["c0TopSR"].setMax(60)
-                par["denVVSR"].setMin(0)
-                par["denVVSR"].setVal(500)
-                par["denVVSR"].setMax(2000)
+            elif nMuon==2:
+                par["denVVSR"].setMin(-2000)
+                par["denVVSR"].setVal(1000)
+                par["denVVSR"].setMax(5000)
+                par["numVVSR"].setMin(-3.4e-3)
+                par["numVVSR"].setVal(-3.e-3)
+                par["numVVSR"].setMax(-2.5e-3)
+                par["denVjetSR"].setMin(-5000)
+                par["denVjetSR"].setVal(200)
+                par["denVjetSR"].setMax(5000)
+                
+    if EXTRAPOLATE:
+        if nBtag == 2 and VBF:
+            if nMuon==2:
+                par["denVjetSR"].setMin(-6000)
+                par["denVjetSR"].setVal(3000)
+                par["denVjetSR"].setMax(6000)
+                par["denVjetSB"].setMin(-6000)
+                par["denVjetSB"].setVal(3000)
+                par["denVjetSB"].setMax(5000)
                 par["c0MainSB"].setMin(20)
-                par["c0MainSB"].setVal(130)
-                par["c0MainSB"].setMax(200)
-        
-            elif nMuon==2:
-                #only for extrapolate!
-                par["numVVSB"].setMin(-7.e-3)
-                par["numVVSB"].setVal(-5.e-3)
-                par["numVVSB"].setMax(-3.e-3)
-                par["denTopSB"].setMin(-6000)
-                par["denTopSB"].setVal(-2500)
-                par["denTopSB"].setMax(-500)
-  
-        elif nBtag==0 and not VBF:
-            if nLept==0:
-                #only for extrapolate!
-                par["denTopSR"].setMin(-4500)
-                par["denTopSR"].setVal(-2000)
-                par["denTopSR"].setMax(0)
-                par["c0TopSR"].setMin(80)
-                par["c0TopSR"].setVal(110)
-                par["c0TopSR"].setMax(150)
-                par["denVVSR"].setMin(-1500)
-                par["denVVSR"].setVal(-700)
-                par["denVVSR"].setMax(1500)
-                par["c0MainSB"].setMin(10)
-                par["c0MainSB"].setVal(50)
-                par["c0MainSB"].setMax(150)
-            elif nMuon==2:
-                #only for extrapolate!
-                par["denTopSB"].setMin(-5000)
-                par["denTopSB"].setVal(-3500)
-                par["denTopSB"].setMax(-1500)
-
-        elif nBtag == 2 and VBF:
-            if nLept==0:
-                #only for extrapolate!
-                par["denVVSB"].setMin(-5000)
-                par["denVVSB"].setVal(-3000)
-                par["denVVSB"].setMax(-1000)
-                par["c0VVSR"].setMin(10)
-                par["c0VVSR"].setVal(50)
-                par["c0VVSR"].setMax(100)
-                par["c0MainSB"].setMin(100)
-   
-            elif nElec==2:
-                #only for extrapolate!
-                par["denTopSR"].setMin(-5000)
-                par["denTopSR"].setVal(-3000)
-                par["denTopSR"].setMax(-1000)
-  
+                par["c0MainSB"].setVal(60)
+                par["c0MainSB"].setMax(260)
         elif nBtag==0 and VBF:
-            if nLept==0:
-                #only for extrapolate!
-                par["denTopSR"].setMin(-5000)
-                par["denTopSR"].setVal(-3000)
-                par["denTopSR"].setMax(-1000)
-                par["c0VVSR"].setMin(50)
-                par["c0VVSR"].setVal(100)
-                par["c0VVSR"].setMax(150)
-     
-
+            if nMuon==2:
+                par["denTopSB"].setMin(-9000)
+                par["denTopSB"].setVal(-7000)
+                par["denTopSB"].setMax(-3000)
+            
             
     # Define PRIMARY PDF for shape
     if functions[category]["Shape"] == "EXP":
@@ -1273,7 +1261,7 @@ def alpha(channel):
                 p.setVal( min(max(p.getVal(), p.getMin()), p.getMax()) )
 
     if EXTRAPOLATE or SCAN: exit()
-    #exit()
+    #sys.exit("Planned stop")
     #*******************************************************#
     #                                                       #
     #                    Signal shape                       #
@@ -1296,24 +1284,25 @@ def alpha(channel):
     binsSignal = RooBinning(Xbins*5, X_mass.getMin(), X_mass.getMax())
     binsSignal.addUniform(Xbins*5, X_mass.getMin(), X_mass.getMax())
 
-
+    syst_trig_muon =  np.sqrt((0.04*LUMI_2016/LUMI)**2+(0.08*LUMI_2017/LUMI)**2+(0.08*LUMI_2018/LUMI)**2)
     syst, syst_shape, syst_bkg, syst_sign = {}, {}, {}, {}
-    syst_trig = { 'nnbb' : 0.000, 'eebb' : 0.06, 'mmbb' : 0.019, 'nn0b' : 0.000, 'ee0b' : 0.06, 'mm0b' : 0.016, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.06, 'mmbbVBF' : 0.016, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.06, 'mm0bVBF' : 0.017}
-    syst_elec = { 'nnbb' : 0.000, 'eebb' : 0.071, 'mmbb' : 0.000, 'nn0b' : 0.000, 'ee0b' : 0.087, 'mm0b' : 0.000, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.090, 'mmbbVBF' : 0.000, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.098, 'mm0bVBF' : 0.000}
-    syst_muon = { 'nnbb' : 0.000, 'eebb' : 0.000, 'mmbb' : 0.005, 'nn0b' : 0.000, 'ee0b' : 0.000, 'mm0b' : 0.005, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.000, 'mmbbVBF' : 0.006, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.000, 'mm0bVBF' : 0.006}
-    #syst_trig = {'nnbb' : 0.000, 'eebb' : 0.057, 'mmbb' : 0.022, 'nn0b' : 0.000, 'ee0b' : 0.056, 'mm0b' : 0.017, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.063, 'mmbbVBF' : 0.027, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.068, 'mm0bVBF' : 0.020}
+    syst_trig = {'nnbb' : 0.000, 'eebb' : 0.004, 'mmbb' : 0.018+syst_trig_muon, 'nn0b' : 0.000, 'ee0b' : 0.004, 'mm0b' : 0.016+syst_trig_muon, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.005, 'mmbbVBF' : 0.016+syst_trig_muon, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.005, 'mm0bVBF' : 0.018+syst_trig_muon}
+    syst_elec = {'nnbb' : 0.000, 'eebb' : 0.067, 'mmbb' : 0.000, 'nn0b' : 0.000, 'ee0b' : 0.089, 'mm0b' : 0.000, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.096, 'mmbbVBF' : 0.000, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.099, 'mm0bVBF' : 0.000}
+    syst_muon = {'nnbb' : 0.000, 'eebb' : 0.000, 'mmbb' : 0.005, 'nn0b' : 0.000, 'ee0b' : 0.000, 'mm0b' : 0.005, 'nnbbVBF' : 0.000, 'eebbVBF' : 0.000, 'mmbbVBF' : 0.006, 'nn0bVBF' : 0.000, 'ee0bVBF' : 0.000, 'mm0bVBF' : 0.006}
     syst_taus = {'nnbb' : 0.030, 'eebb' : 0.000, 'mmbb' : 0.000, 'nn0b' : 0.030, 'ee0b' : 0.000, 'mm0b' : 0.000, 'nnbbVBF' : 0.030, 'eebbVBF' : 0.000, 'mmbbVBF' : 0.000, 'nn0bVBF' : 0.030, 'ee0bVBF' : 0.000, 'mm0bVBF' : 0.000}
     syst_mets = {'nnbb' : 0.010, 'eebb' : 0.000, 'mmbb' : 0.000, 'nn0b' : 0.010, 'ee0b' : 0.000, 'mm0b' : 0.000, 'nnbbVBF' : 0.010, 'eebbVBF' : 0.000, 'mmbbVBF' : 0.000, 'nn0bVBF' : 0.010, 'ee0bVBF' : 0.000, 'mm0bVBF' : 0.000}
 
-    syst[PREFIX+"scale_mass"] = 0.010
-    syst[PREFIX+"res_mass"] = [-0.101, +0.112]
+    #jet mass scale
+    syst[PREFIX+"scale_mass"] = 0.006
+    #jet mass resolution
+    syst[PREFIX+"res_mass"] = [-0.090, +0.090]
     syst[PREFIX+"eff_H"] = 0.060
     if not nBtag==0:
-        eff_b = { 800 : [0.981, 1.019], 1000 : [0.975, 1.025], 1200 : [0.969, 1.031], 1400 : [0.957, 1.043], 1600 : [0.948, 1.052], 1800 : [0.944, 1.056], 2000 : [0.943, 1.056], 2500 : [0.945, 1.055], 3000 : [0.952, 1.048], 3500 : [0.961, 1.039], 4000 : [0.974, 1.026], 4500 : [0.988, 1.011], 5000 : [1.031, 0.969]}
-        eff_b_tt = [0.986, 1.014]
+        eff_b = {800 : [0.961, 1.040], 1000 : [0.955, 1.046], 1200 : [0.944, 1.058], 1400 : [0.913, 1.093], 1600 : [0.889, 1.119], 1800 : [0.877, 1.133], 2000 : [0.873, 1.138], 2500 : [0.869, 1.141], 3000 : [0.868, 1.142], 3500 : [0.868, 1.143], 4000 : [0.868, 1.143], 4500 : [0.866, 1.145], 5000 : [0.862, 1.150]}
+        eff_b_tt = [0.987, 1.019]
     if nBtag==0:
-        eff_b = {800 : [0.989, 1.011], 1000 : [0.991, 1.009], 1200 : [0.994, 1.006], 1400 : [0.995, 1.005], 1600 : [0.995, 1.005], 1800 : [0.997, 1.003], 2000 : [0.997, 1.003], 2500 : [1.004, 0.996], 3000 : [1.016, 0.984], 3500 : [1.026, 0.974], 4000 : [1.039, 0.961], 4500 : [1.054, 0.946], 5000 : [1.092, 0.907]}
-        eff_b_tt = [0.986, 1.013]
+        eff_b = {800 : [1.007, 0.993], 1000 : [1.009, 0.991], 1200 : [1.013, 0.988], 1400 : [1.025, 0.976], 1600 : [1.033, 0.968], 1800 : [1.038, 0.963], 2000 : [1.041, 0.961], 2500 : [1.050, 0.952], 3000 : [1.054, 0.948], 3500 : [1.057, 0.945], 4000 : [1.059, 0.944], 4500 : [1.061, 0.941], 5000 : [1.063, 0.940]}
+        eff_b_tt = [0.986, 1.018]
     syst[PREFIX+"eff_e"] = syst_elec[category]+syst_trig[category]
     syst[PREFIX+"eff_m"] = syst_muon[category]+syst_trig[category]
     syst[PREFIX+"eff_t"] = syst_taus[category]
@@ -1322,7 +1311,8 @@ def alpha(channel):
     syst[PREFIX+"scale_e"] = 0.010
     syst[PREFIX+"scale_m"] = 0.010
     syst["pdf_accept"] = 0.010
-    syst[PREFIX+"lumi"] = 0.025
+    #treat luminosity uncertainty as uncorrelated
+    syst[PREFIX+"lumi"] = np.sqrt((0.025*LUMI_2016/LUMI)**2+(0.023*LUMI_2017/LUMI)**2+(0.025*LUMI_2018/LUMI)**2)
     syst["pdf_scale"] = { 1000 : [1.067, 0.933],  1100 : [1.068, 0.932],  1200 : [1.070, 0.930],  1300 : [1.073, 0.927],  1400 : [1.076, 0.924],  1500 : [1.079, 0.921],  1600 : [1.082, 0.918],  1700 : [1.085, 0.915],  1800 : [1.088, 0.912],  1900 : [1.092, 0.908],  2000 : [1.095, 0.905],  2100 : [1.100, 0.900],  2200 : [1.106, 0.894],  2300 : [1.111, 0.889],  2400 : [1.116, 0.884],  2500 : [1.121, 0.879],  2600 : [1.129, 0.871],  2700 : [1.137, 0.863],  2800 : [1.145, 0.855],  2900 : [1.153, 0.847],  3000 : [1.160, 0.840],  3100 : [1.173, 0.827],  3200 : [1.185, 0.815],  3300 : [1.197, 0.803],  3400 : [1.210, 0.790],  3500 : [1.222, 0.778],  3600 : [1.244, 0.756],  3700 : [1.265, 0.735],  3800 : [1.287, 0.713],  3900 : [1.309, 0.691],  4000 : [1.330, 0.670],  4100 : [1.361, 0.639],  4200 : [1.392, 0.608],  4300 : [1.423, 0.577],  4400 : [1.453, 0.547],  4500 : [1.484, 0.516], 4600 : [1.484, 0.516], 4700 : [1.484, 0.516], 4800 : [1.484, 0.516], 4900 : [1.484, 0.516], 5000 : [1.484, 0.516], 5100 : [1.484, 0.516], 5200 : [1.484, 0.516], 5300 : [1.484, 0.516], 5400 : [1.484, 0.516], 5500 : [1.484, 0.516], 5600 : [1.484, 0.516], 5700 : [1.484, 0.516], 5800 : [1.484, 0.516], 5900 : [1.484, 0.516], 6000 : [1.484, 0.516],}
     syst["qcd_scale"] = { 1000 : [1.039, 0.963],  1100 : [1.045, 0.958],  1200 : [1.050, 0.954],  1300 : [1.054, 0.950],  1400 : [1.059, 0.947],  1500 : [1.063, 0.944],  1600 : [1.067, 0.940],  1700 : [1.070, 0.938],  1800 : [1.074, 0.935],  1900 : [1.077, 0.932],  2000 : [1.080, 0.930],  2100 : [1.083, 0.927],  2200 : [1.086, 0.925],  2300 : [1.089, 0.922],  2400 : [1.092, 0.920],  2500 : [1.096, 0.917],  2600 : [1.098, 0.915],  2700 : [1.101, 0.913],  2800 : [1.104, 0.911],  2900 : [1.107, 0.909],  3000 : [1.109, 0.907],  3100 : [1.112, 0.905],  3200 : [1.114, 0.903],  3300 : [1.117, 0.901],  3400 : [1.120, 0.899],  3500 : [1.122, 0.897],  3600 : [1.124, 0.896],  3700 : [1.126, 0.894],  3800 : [1.129, 0.893],  3900 : [1.131, 0.891],  4000 : [1.133, 0.889],  4100 : [1.135, 0.888],  4200 : [1.137, 0.887],  4300 : [1.138, 0.886],  4400 : [1.140, 0.885],  4500 : [1.142, 0.883], 4600 : [1.142, 0.883], 4700 : [1.142, 0.883], 4800 : [1.142, 0.883], 4900 : [1.142, 0.883], 5000 : [1.142, 0.883], 5100 : [1.142, 0.883], 5200 : [1.142, 0.883], 5300 : [1.142, 0.883], 5400 : [1.142, 0.883], 5500 : [1.142, 0.883], 5600 : [1.142, 0.883], 5700 : [1.142, 0.883], 5800 : [1.142, 0.883], 5900 : [1.142, 0.883], 6000 : [1.142, 0.883],}
     if nBtag==0:
@@ -1682,7 +1672,10 @@ def drawPlot(name, channel, variable, model, dataset, fitRes=[], norm=-1, reg=No
 
     if not isMass and not isSignal: # Log scale
         frame.SetMaximum(frame.GetMaximum()*10)
-        frame.SetMinimum(max(frame.GetMinimum(), 8.e-2 if isData else 1.e-4))
+        if'BkgSR' in name:
+            frame.SetMinimum(1.e-3)
+        else:
+            frame.SetMinimum(max(frame.GetMinimum(), 8.e-2 if isData else 1.e-4))
         c.GetPad(1).SetLogy()
     else:
         frame.GetYaxis().SetRangeUser(0, frame.GetMaximum())

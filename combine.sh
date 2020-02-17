@@ -10,9 +10,9 @@
 #for VBF categories alone:
 #option="--freezeNuisanceGroups=theory --cminDefaultMinimizerStrategy 0"
 #for combined categories:
-#option="--rMin -3 --rMax 3 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerPrecision 1E-12"
+option="--rMin -3 --rMax 3 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerPrecision 1E-12"
 #for all combined:
-option="--rMin -8 --rMax 8 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --X-rtd MINIMIZER_analyti --cminDefaultMinimizerPrecision 1E-14"
+#option="--rMin -8 --rMax 8 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerPrecision 1E-14"
 #option="-H ProfileLikelihood"
 
 
