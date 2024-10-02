@@ -1,5 +1,4 @@
 # ZprimeToZHAnalysis
-Zprime To ZH To Zlep Hinc Analysis
 Master thesis project at the University of Zuerich
 
 Scripts of the Zprime To ZH To Zlep Hinc Analysis.
